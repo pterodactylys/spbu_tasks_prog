@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-void tools::print_array(const int* arr, const int size) {
+void tools::print_array(const char* const comment, const int* arr, const int size) {
+	std::cout << comment << std::endl;
     for (int i = 0; i < size; i++) {
         std::cout << arr[i] << ' ';
     }

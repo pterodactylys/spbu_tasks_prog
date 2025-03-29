@@ -1,5 +1,5 @@
 #define PRINT_HPP
 
 namespace tools {
-    void print_array(const int* arr, const int size);
+    void print_array(const char* const comment, const int* arr, const int size);
 }
