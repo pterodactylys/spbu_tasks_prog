@@ -1,9 +1,6 @@
-#
-#
-#
-
 build_*/
 lib/
+libs/
 
 *.exe
 *.ii

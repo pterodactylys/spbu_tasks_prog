@@ -1,5 +1,5 @@
-#include "print.hpp"
-#include "sortings.hpp"
+#include "src/print.hpp"
+#include "src/sortings.hpp"
 
 int main() {
     int arr[] = {1, 8, 2, 5, 3, 11};
