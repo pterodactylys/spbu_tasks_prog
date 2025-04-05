@@ -8,4 +8,3 @@ enable_testing()
 add_subdirectory(lib/googletest)
 
 add_subdirectory(shell_sort)
-include_directories(shell_sort)

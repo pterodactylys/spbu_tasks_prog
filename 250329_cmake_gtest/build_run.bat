@@ -21,4 +21,6 @@ if exist test (
 	cd ..
 )
 
+copy ..\%SOURCE_FOLDER%\shell_sort\build_run.bat .\shell_sort
+
 cd ..

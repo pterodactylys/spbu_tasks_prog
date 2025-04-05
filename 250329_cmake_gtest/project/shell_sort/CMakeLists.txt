@@ -1,16 +1,11 @@
 project(shell_sort)
 
-set(HEADERS
-	src/print.hpp
-	src/sortings.hpp
-)
+add_library(sort_lib "")
 
-set(SOURCES
-	main.cpp
-	src/print.cpp
-	src/sortings.cpp
-)
-
-add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
-
+add_subdirectory(src)
 add_subdirectory(test)
+
+add_executable(sort_main
+	main.cpp
+)
+target_link_libraries(sort_main sort_lib)
