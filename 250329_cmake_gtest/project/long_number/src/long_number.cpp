@@ -10,7 +10,7 @@ LongNumber::LongNumber() {
 }
 
 LongNumber::LongNumber(const char* const str) {
-	int len = get_length(str);
+	int len = sizeof(str) / sizeof(str[0]);
 	if (len == 0) {
 		length = 1;
 		sign = 1;
@@ -57,78 +57,89 @@ LongNumber::~LongNumber() {
 	sign = 0;
 }
 
-LongNumber& LongNumber::operator = (const char* const str) {
-	// TODO
-}
+// LongNumber& LongNumber::operator = (const char* const str) {
+// 	// TODO
+// }
 
-LongNumber& LongNumber::operator = (const LongNumber& x) {
-	// TODO
-}
+// LongNumber& LongNumber::operator = (const LongNumber& x) {
+// 	// TODO
+// }
 
-LongNumber& LongNumber::operator = (LongNumber&& x) {
-	// TODO
-}
+// LongNumber& LongNumber::operator = (LongNumber&& x) {
+// 	// TODO
+// }
 
-bool LongNumber::operator == (const LongNumber& x) const {
-	// TODO
-}
+// bool LongNumber::operator == (const LongNumber& x) const {
+// 	// TODO
+// }
 
-bool LongNumber::operator != (const LongNumber& x) const {
-	// TODO
-}
+// bool LongNumber::operator != (const LongNumber& x) const {
+// 	// TODO
+// }
 
-bool LongNumber::operator > (const LongNumber& x) const {
-	// TODO
-}
+// bool LongNumber::operator > (const LongNumber& x) const {
+// 	// TODO
+// }
 
-bool LongNumber::operator < (const LongNumber& x) const {
-	// TODO
-}
+// bool LongNumber::operator < (const LongNumber& x) const {
+// 	// TODO
+// }
 
-LongNumber LongNumber::operator + (const LongNumber& x) const {
-	// TODO
-}
+// LongNumber LongNumber::operator + (const LongNumber& x) const {
+// 	// TODO
+// }
 
-LongNumber LongNumber::operator - (const LongNumber& x) const {
-	// TODO
-}
+// LongNumber LongNumber::operator - (const LongNumber& x) const {
+// 	// TODO
+// }
 
-LongNumber LongNumber::operator * (const LongNumber& x) const {
-	// TODO
-}
+// LongNumber LongNumber::operator * (const LongNumber& x) const {
+// 	// TODO
+// }
 
-LongNumber LongNumber::operator / (const LongNumber& x) const {
-	// TODO
-}
+// LongNumber LongNumber::operator / (const LongNumber& x) const {
+// 	// TODO
+// }
 
-LongNumber LongNumber::operator % (const LongNumber& x) const {
-	// TODO
-}
+// LongNumber LongNumber::operator % (const LongNumber& x) const {
+// 	// TODO
+// }
 
-int LongNumber::get_digits_number() const noexcept {
-	// TODO
-}
+// int LongNumber::get_digits_number() const noexcept {
+// 	// TODO
+// }
 
-int LongNumber::get_rank_number(int rank) const {
-	// TODO
-}
+// int LongNumber::get_rank_number(int rank) const {
+// 	// TODO
+// }
 
-bool LongNumber::is_negative() const noexcept {
-	// TODO
-}
+// bool LongNumber::is_negative() const noexcept {
+// 	// TODO
+// }
 
 // ----------------------------------------------------------
 // PRIVATE
 // ----------------------------------------------------------
-int LongNumber::get_length(const char* const str) const noexcept {
-	// TODO
-}
+// int LongNumber::get_length(const char* const str) const noexcept {
+// 	// TODO
+// }
 
 // ----------------------------------------------------------
 // FRIENDLY
 // ----------------------------------------------------------
 namespace abc {
 	std::ostream& operator << (std::ostream &os, const LongNumber& x) {
-		// TODO
+		if (x.numbers == nullptr) {
+			os << "0";
+		}
+		else {
+			if (x.sign == -1) {
+				os << "-";
+			}
+			for (int i = 0; i < x.length; i++) {
+				os << x.numbers[i];
+			}
+		}
+		return os;
 	}
 }

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 
 namespace abc {
@@ -17,28 +16,28 @@ namespace abc {
 			
 			~LongNumber();
 			
-			LongNumber& operator = (const char* const str);
-			LongNumber& operator = (const LongNumber& x);
-			LongNumber& operator = (LongNumber&& x);
+			// LongNumber& operator = (const char* const str);
+			// LongNumber& operator = (const LongNumber& x);
+			// LongNumber& operator = (LongNumber&& x);
 			
-			bool operator == (const LongNumber& x) const;
-			bool operator != (const LongNumber& x) const;
-			bool operator > (const LongNumber& x) const;
-			bool operator < (const LongNumber& x) const;
+			// bool operator == (const LongNumber& x) const;
+			// bool operator != (const LongNumber& x) const;
+			// bool operator > (const LongNumber& x) const;
+			// bool operator < (const LongNumber& x) const;
 			
-			LongNumber operator + (const LongNumber& x) const;
-			LongNumber operator - (const LongNumber& x) const;
-			LongNumber operator * (const LongNumber& x) const;
-			LongNumber operator / (const LongNumber& x) const;
-			LongNumber operator % (const LongNumber& x) const;
+			// LongNumber operator + (const LongNumber& x) const;
+			// LongNumber operator - (const LongNumber& x) const;
+			// LongNumber operator * (const LongNumber& x) const;
+			// LongNumber operator / (const LongNumber& x) const;
+			// LongNumber operator % (const LongNumber& x) const;
 			
-			int get_digits_number() const noexcept;
-			int get_rank_number(const int rank) const;
-			bool is_negative() const noexcept;
+			// int get_digits_number() const noexcept;
+			// int get_rank_number(const int rank) const;
+			// bool is_negative() const noexcept;
 			
 			friend std::ostream& operator << (std::ostream &os, const LongNumber& x);
 			
-		private:
-			int get_length(const char* const str) const noexcept;
+		// private:
+		// 	int get_length(const char* const str) const noexcept;
 	};
 }
