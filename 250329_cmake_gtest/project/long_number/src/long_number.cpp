@@ -10,26 +10,58 @@ LongNumber::LongNumber() {
 }
 
 LongNumber::LongNumber(const char* const str) {
-	// TODO
+	int len = get_length(str);
+	if (len == 0) {
+		length = 1;
+		sign = 1;
+		numbers = new int[length];
+		numbers[0] = 0;
+	}
+	else {
+		if (str[0] == '-') {
+			sign = -1;
+			len--;
+		}
+		else {
+			sign = 1;
+		}
+		length = len;
+		numbers = new int[length];
+		int start = (str[0] == '-') ? 1 : 0;
+		for (int i = start; i < len + start; i++) {
+			numbers[i - start] = str[i] - '0';
+		}
+	}
 }
 
 LongNumber::LongNumber(const LongNumber& x) {
-	// TODO
+	length = x.length;
+	sign = x.sign;
+	numbers = new int[length];
+	for (int i = 0; i < length; i++) {
+		numbers[i] = x.numbers[i];
+	}
 }
 
 LongNumber::LongNumber(LongNumber&& x) {
-	// TODO
+	length = x.length;
+	sign = x.sign;
+	numbers = x.numbers;
+	x.numbers = nullptr;
 }
 
 LongNumber::~LongNumber() {
-	// TODO
+	length = 0;
+	delete[] numbers;
+	numbers = nullptr;
+	sign = 0;
 }
 
 LongNumber& LongNumber::operator = (const char* const str) {
 	// TODO
 }
 
-LongNumber& LongNumber::operator = (const LongNumber& x {
+LongNumber& LongNumber::operator = (const LongNumber& x) {
 	// TODO
 }
 
@@ -95,7 +127,7 @@ int LongNumber::get_length(const char* const str) const noexcept {
 // ----------------------------------------------------------
 // FRIENDLY
 // ----------------------------------------------------------
-namespace biv {
+namespace abc {
 	std::ostream& operator << (std::ostream &os, const LongNumber& x) {
 		// TODO
 	}
