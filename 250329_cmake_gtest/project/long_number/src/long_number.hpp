@@ -16,14 +16,14 @@ namespace abc {
 			
 			~LongNumber();
 			
-			// LongNumber& operator = (const char* const str);
-			// LongNumber& operator = (const LongNumber& x);
-			// LongNumber& operator = (LongNumber&& x);
+			LongNumber& operator = (const char* const str);
+			LongNumber& operator = (const LongNumber& x);
+			LongNumber& operator = (LongNumber&& x);
 			
-			// bool operator == (const LongNumber& x) const;
-			// bool operator != (const LongNumber& x) const;
-			// bool operator > (const LongNumber& x) const;
-			// bool operator < (const LongNumber& x) const;
+			bool operator == (const LongNumber& x) const;
+			bool operator != (const LongNumber& x) const;
+			bool operator > (const LongNumber& x) const;
+			bool operator < (const LongNumber& x) const;
 			
 			// LongNumber operator + (const LongNumber& x) const;
 			// LongNumber operator - (const LongNumber& x) const;
@@ -37,7 +37,7 @@ namespace abc {
 			
 			friend std::ostream& operator << (std::ostream &os, const LongNumber& x);
 			
-		// private:
-		// 	int get_length(const char* const str) const noexcept;
+		private:
+			int get_length(const char* const str) const noexcept;
 	};
 }
