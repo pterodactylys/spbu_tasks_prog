@@ -8,5 +8,7 @@ int main() {
     abc::LongNumber a(str);
     abc::LongNumber b(str2);
     abc::LongNumber c = a - b;
-    std::cout << c << std::endl;
+    std::cout << a << std::endl;
+    a = a * b;
+    std::cout << a << std::endl;
 }

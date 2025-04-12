@@ -319,9 +319,47 @@ LongNumber LongNumber::operator - (const LongNumber& x) const {
 }
 			
 
-// LongNumber LongNumber::operator * (const LongNumber& x) const {
-// 	// TODO
-// }
+LongNumber LongNumber::operator * (const LongNumber& x) const {
+	LongNumber result;
+	result.length = length + x.length;
+	result.sign = sign * x.sign;
+	result.numbers = new int[result.length];
+	for (int i = 0; i < result.length; i++) {
+		result.numbers[i] = 0;
+	}
+	for (int i = 0; i < length; i++) {
+		int carry = 0;
+		for (int j = 0; j < x.length; j++) {
+			int product = numbers[length - 1 - i] * x.numbers[x.length - 1 - j] + carry + result.numbers[result.length - 1 - (i + j)];
+			result.numbers[result.length - 1 - (i + j)] = product % 10;
+			carry = product / 10;
+		}
+		if (carry > 0) {
+			result.numbers[result.length - 1 - (i + x.length)] += carry;
+		}
+	}
+	int leadingZeros = 0;
+	while (leadingZeros < result.length && result.numbers[leadingZeros] == 0) {
+		leadingZeros++;
+	}
+	if (leadingZeros == result.length) {
+		delete[] result.numbers;
+		result.length = 1;
+		result.numbers = new int[result.length];
+		result.numbers[0] = 0;
+	}
+	else {
+		int newLength = result.length - leadingZeros;
+		int* newNumbers = new int[newLength];
+		for (int i = 0; i < newLength; i++) {
+			newNumbers[i] = result.numbers[leadingZeros + i];
+		}
+		delete[] result.numbers;
+		result.numbers = newNumbers;
+		result.length = newLength;
+	}
+	return result;
+}
 
 // LongNumber LongNumber::operator / (const LongNumber& x) const {
 // 	// TODO

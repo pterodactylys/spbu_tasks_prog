@@ -27,7 +27,7 @@ namespace abc {
 			
 			LongNumber operator + (const LongNumber& x) const;
 			LongNumber operator - (const LongNumber& x) const;
-			// LongNumber operator * (const LongNumber& x) const;
+			LongNumber operator * (const LongNumber& x) const;
 			// LongNumber operator / (const LongNumber& x) const;
 			// LongNumber operator % (const LongNumber& x) const;
 			
