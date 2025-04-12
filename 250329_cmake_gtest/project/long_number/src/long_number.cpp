@@ -187,13 +187,137 @@ bool LongNumber::operator < (const LongNumber& x) const {
 	return false;
 }
 
-// LongNumber LongNumber::operator + (const LongNumber& x) const {
-// 	// TODO
-// }
+LongNumber LongNumber::operator + (const LongNumber& x) const {
+	LongNumber result;
+	int carry = 0;
+	int maxLength = (length > x.length) ? length : x.length;
+	result.length = maxLength + 1;
+	result.sign = sign;
+	result.numbers = new int[result.length];
+	for (int i = 0; i < result.length; i++) {
+		result.numbers[i] = 0;
+	}
+	if (sign == x.sign == 1) {
+		for (int i = 0; i < maxLength; i++) {
+			int a = (i < length) ? numbers[length - 1 - i] : 0;
+			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
+			int sum = a + b + carry;
+			result.numbers[result.length - 1 - i] = sum % 10;
+			carry = sum / 10;
+		}
+		if (carry > 0) {
+			result.numbers[0] = carry;
+		}
+		else {
+			result.length--;
+			for (int i = 0; i < result.length; i++) {
+				result.numbers[i] = result.numbers[i + 1];
+			}
+		}
+	}
+	else if (sign == x.sign == -1) {
+		for (int i = 0; i < maxLength; i++) {
+			int a = (i < length) ? numbers[length - 1 - i] : 0;
+			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
+			int sum = a + b + carry;
+			result.numbers[result.length - 1 - i] = sum % 10;
+			carry = sum / 10;
+		}
+		if (carry > 0) {
+			result.numbers[0] = carry;
+		}
+		else {
+			result.length--;
+			for (int i = 0; i < result.length; i++) {
+				result.numbers[i] = result.numbers[i + 1];
+			}
+		}
+	}
+	else if (sign == -1 && x.sign == 1) {
+		LongNumber temp(*this);
+		temp.sign = 1;
+		return temp - x;
+	}
+	else if (sign == 1 && x.sign == -1) {
+		LongNumber temp(x);
+		temp.sign = 1;
+		return *this - temp;
+	}
+	return result;
+}
 
-// LongNumber LongNumber::operator - (const LongNumber& x) const {
-// 	// TODO
-// }
+
+LongNumber LongNumber::operator - (const LongNumber& x) const {
+	LongNumber result;
+	int borrow = 0;
+	int maxLength = (length > x.length) ? length : x.length;
+	result.length = maxLength + 1;
+	result.sign = sign;
+	result.numbers = new int[result.length];
+	for (int i = 0; i < result.length; i++) {
+		result.numbers[i] = 0;
+	}
+	if (sign == x.sign == 1) {
+		for (int i = 0; i < maxLength; i++) {
+			int a = (i < length) ? numbers[length - 1 - i] : 0;
+			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
+			int diff = a - b - borrow;
+			if (diff < 0) {
+				diff += 10;
+				borrow = 1;
+			}
+			else {
+				borrow = 0;
+			}
+			result.numbers[result.length - 1 - i] = diff % 10;
+		}
+		if (borrow > 0) {
+			result.numbers[0] = borrow;
+		}
+		else {
+			result.length--;
+			for (int i = 0; i < result.length; i++) {
+				result.numbers[i] = result.numbers[i + 1];
+			}
+		}
+	}
+	else if (sign == x.sign == -1) {
+		for (int i = 0; i < maxLength; i++) {
+			int a = (i < length) ? numbers[length - 1 - i] : 0;
+			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
+			int diff = a - b - borrow;
+			if (diff < 0) {
+				diff += 10;
+				borrow = 1;
+			}
+			else {
+				borrow = 0;
+			}
+			result.numbers[result.length - 1 - i] = diff % 10;
+		}
+		if (borrow > 0) {
+			result.numbers[0] = borrow;
+		}
+		else {
+			result.length--;
+			for (int i = 0; i < result.length; i++) {
+				result.numbers[i] = result.numbers[i + 1];
+			}
+		}
+	}
+	else if (sign == -1 && x.sign == 1) {
+		LongNumber temp(*this);
+		temp.sign = 1;
+		return temp + x;
+	}
+	else if (sign == 1 && x.sign == -1) {
+		LongNumber temp(x);
+		temp.sign = 1;
+		return *this + temp;
+	}
+	return result;
+}
+			
 
 // LongNumber LongNumber::operator * (const LongNumber& x) const {
 // 	// TODO

@@ -25,8 +25,8 @@ namespace abc {
 			bool operator > (const LongNumber& x) const;
 			bool operator < (const LongNumber& x) const;
 			
-			// LongNumber operator + (const LongNumber& x) const;
-			// LongNumber operator - (const LongNumber& x) const;
+			LongNumber operator + (const LongNumber& x) const;
+			LongNumber operator - (const LongNumber& x) const;
 			// LongNumber operator * (const LongNumber& x) const;
 			// LongNumber operator / (const LongNumber& x) const;
 			// LongNumber operator % (const LongNumber& x) const;
