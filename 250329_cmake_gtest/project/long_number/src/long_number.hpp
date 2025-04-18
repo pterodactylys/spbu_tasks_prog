@@ -10,6 +10,7 @@ namespace abc {
 		
 		public:
 			LongNumber();
+			LongNumber(int num);
 			LongNumber(const char* const str);
 			LongNumber(const LongNumber& x);
 			LongNumber(LongNumber&& x);
@@ -24,11 +25,13 @@ namespace abc {
 			bool operator != (const LongNumber& x) const;
 			bool operator > (const LongNumber& x) const;
 			bool operator < (const LongNumber& x) const;
+			bool operator >= (const LongNumber& x) const;
+			bool operator <= (const LongNumber& x) const;
 			
 			LongNumber operator + (const LongNumber& x) const;
 			LongNumber operator - (const LongNumber& x) const;
 			LongNumber operator * (const LongNumber& x) const;
-			// LongNumber operator / (const LongNumber& x) const;
+			LongNumber operator / (const LongNumber& x) const;
 			// LongNumber operator % (const LongNumber& x) const;
 			
 			// int get_digits_number() const noexcept;
