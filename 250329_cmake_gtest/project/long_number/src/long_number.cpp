@@ -231,7 +231,7 @@ LongNumber LongNumber::operator + (const LongNumber& x) const {
 	for (int i = 0; i < result.length; i++) {
 		result.numbers[i] = 0;
 	}
-	if (sign == x.sign == 1) {
+	if ((sign == 1) && (x.sign == 1)) {
 		for (int i = 0; i < maxLength; i++) {
 			int a = (i < length) ? numbers[length - 1 - i] : 0;
 			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
@@ -249,7 +249,7 @@ LongNumber LongNumber::operator + (const LongNumber& x) const {
 			}
 		}
 	}
-	else if (sign == x.sign == -1) {
+	else if ((sign == 1) && (x.sign == 1)) {
 		for (int i = 0; i < maxLength; i++) {
 			int a = (i < length) ? numbers[length - 1 - i] : 0;
 			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
@@ -291,7 +291,7 @@ LongNumber LongNumber::operator - (const LongNumber& x) const {
 	for (int i = 0; i < result.length; i++) {
 		result.numbers[i] = 0;
 	}
-	if (sign == x.sign == 1) {
+	if ((sign == 1) && (x.sign == 1)) {
 		for (int i = 0; i < maxLength; i++) {
 			int a = (i < length) ? numbers[length - 1 - i] : 0;
 			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
@@ -315,7 +315,7 @@ LongNumber LongNumber::operator - (const LongNumber& x) const {
 			}
 		}
 	}
-	else if (sign == x.sign == -1) {
+	else if ((sign == 1) && (x.sign == 1)) {
 		for (int i = 0; i < maxLength; i++) {
 			int a = (i < length) ? numbers[length - 1 - i] : 0;
 			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
@@ -501,17 +501,20 @@ LongNumber LongNumber::operator % (const LongNumber& x) const {
 	return remainder;
 }
 
-// int LongNumber::get_digits_number() const noexcept {
-// 	// TODO
-// }
+int LongNumber::get_digits_number() const noexcept {
+	return length;
+}
 
-// int LongNumber::get_rank_number(int rank) const {
-// 	// TODO
-// }
+int LongNumber::get_rank_number(const int rank) const {
+	if (rank < 1 || rank > length) {
+		throw std::out_of_range("Rank out of range");
+	}
+	return numbers[length - rank];
+}
 
-// bool LongNumber::is_negative() const noexcept {
-// 	// TODO
-// }
+bool LongNumber::is_negative() const noexcept {
+	return sign == -1;
+}
 
 // ----------------------------------------------------------
 // PRIVATE

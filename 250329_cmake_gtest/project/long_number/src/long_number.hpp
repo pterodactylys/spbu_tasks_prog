@@ -34,9 +34,9 @@ namespace abc {
 			LongNumber operator / (const LongNumber& x) const;
 			LongNumber operator % (const LongNumber& x) const;
 			
-			// int get_digits_number() const noexcept;
-			// int get_rank_number(const int rank) const;
-			// bool is_negative() const noexcept;
+			int get_digits_number() const noexcept;
+			int get_rank_number(const int rank) const;
+			bool is_negative() const noexcept;
 			
 			friend std::ostream& operator << (std::ostream &os, const LongNumber& x);
 			

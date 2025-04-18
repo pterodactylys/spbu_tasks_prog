@@ -1,14 +1,14 @@
 #include "src/long_number.hpp"
 #include <iostream>
 
+using abc::LongNumber;
 
 int main() {
-    const char* const str = "1120";
-    const char* const str2 = "1000";
-    abc::LongNumber a(str);
-    abc::LongNumber b(str2);
-    abc::LongNumber c(5784);
-    std::cout << a / b << std::endl;
-    std::cout << a % b << std::endl;
-    std::cout << c << std::endl;
+    abc::LongNumber x("1234567890");
+    std::cout << x << std::endl;
+    std::cout << x << std::endl;
+    std::cout << x.get_digits_number() << std::endl;
+    std::cout << x.get_rank_number(3) << std::endl;
+    std::cout << x.is_negative() << std::endl;
+    return 0;
 }
