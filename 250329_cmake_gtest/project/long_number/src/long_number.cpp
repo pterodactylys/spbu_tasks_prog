@@ -19,7 +19,7 @@ LongNumber::LongNumber(int num) {
     }
 
     sign = (num >= 0) ? 1 : -1;
-    num = abs(num);
+    num = std::abs(num);
     int temp = num;
     length = 0;
     while (temp != 0) {
@@ -222,134 +222,69 @@ bool LongNumber::operator <= (const LongNumber& x) const {
 }
 
 LongNumber LongNumber::operator + (const LongNumber& x) const {
-	LongNumber result;
-	int carry = 0;
-	int maxLength = (length > x.length) ? length : x.length;
-	result.length = maxLength + 1;
-	result.sign = sign;
-	result.numbers = new int[result.length];
-	for (int i = 0; i < result.length; i++) {
-		result.numbers[i] = 0;
-	}
-	if ((sign == 1) && (x.sign == 1)) {
-		for (int i = 0; i < maxLength; i++) {
-			int a = (i < length) ? numbers[length - 1 - i] : 0;
-			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
-			int sum = a + b + carry;
-			result.numbers[result.length - 1 - i] = sum % 10;
-			carry = sum / 10;
-		}
-		if (carry > 0) {
-			result.numbers[0] = carry;
-		}
-		else {
-			result.length--;
-			for (int i = 0; i < result.length; i++) {
-				result.numbers[i] = result.numbers[i + 1];
-			}
-		}
-	}
-	else if ((sign == 1) && (x.sign == 1)) {
-		for (int i = 0; i < maxLength; i++) {
-			int a = (i < length) ? numbers[length - 1 - i] : 0;
-			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
-			int sum = a + b + carry;
-			result.numbers[result.length - 1 - i] = sum % 10;
-			carry = sum / 10;
-		}
-		if (carry > 0) {
-			result.numbers[0] = carry;
-		}
-		else {
-			result.length--;
-			for (int i = 0; i < result.length; i++) {
-				result.numbers[i] = result.numbers[i + 1];
-			}
-		}
-	}
-	else if (sign == -1 && x.sign == 1) {
-		LongNumber temp(*this);
-		temp.sign = 1;
-		return temp - x;
-	}
-	else if (sign == 1 && x.sign == -1) {
-		LongNumber temp(x);
-		temp.sign = 1;
-		return *this - temp;
-	}
-	return result;
+    if (sign == x.sign) {
+        LongNumber result;
+        int carry = 0;
+        int maxLength = std::max(length, x.length);
+        result.length = maxLength + 1;
+        result.sign = sign;
+        result.numbers = new int[result.length]();
+        
+        for (int i = 0; i < maxLength; i++) {
+            int a = (i < length) ? numbers[length - 1 - i] : 0;
+            int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
+            int sum = a + b + carry;
+            result.numbers[result.length - 1 - i] = sum % 10;
+            carry = sum / 10;
+        }
+        
+        if (carry > 0) {
+            result.numbers[0] = carry;
+        } else {
+            int* newNumbers = new int[result.length - 1];
+            for (int i = 0; i < result.length - 1; i++) {
+                newNumbers[i] = result.numbers[i + 1];
+            }
+            delete[] result.numbers;
+            result.numbers = newNumbers;
+            result.length--;
+        }
+        
+        return result;
+    } else {
+        if (sign == -1) {
+            LongNumber temp = *this;
+            temp.sign = 1;
+            return x - temp;
+        } else {
+            LongNumber temp = x;
+            temp.sign = 1;
+            return *this - temp;
+        }
+    }
 }
 
 
 LongNumber LongNumber::operator - (const LongNumber& x) const {
-	LongNumber result;
-	int borrow = 0;
-	int maxLength = (length > x.length) ? length : x.length;
-	result.length = maxLength + 1;
-	result.sign = sign;
-	result.numbers = new int[result.length];
-	for (int i = 0; i < result.length; i++) {
-		result.numbers[i] = 0;
-	}
-	if ((sign == 1) && (x.sign == 1)) {
-		for (int i = 0; i < maxLength; i++) {
-			int a = (i < length) ? numbers[length - 1 - i] : 0;
-			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
-			int diff = a - b - borrow;
-			if (diff < 0) {
-				diff += 10;
-				borrow = 1;
-			}
-			else {
-				borrow = 0;
-			}
-			result.numbers[result.length - 1 - i] = diff % 10;
-		}
-		if (borrow > 0) {
-			result.numbers[0] = borrow;
-		}
-		else {
-			result.length--;
-			for (int i = 0; i < result.length; i++) {
-				result.numbers[i] = result.numbers[i + 1];
-			}
-		}
-	}
-	else if ((sign == 1) && (x.sign == 1)) {
-		for (int i = 0; i < maxLength; i++) {
-			int a = (i < length) ? numbers[length - 1 - i] : 0;
-			int b = (i < x.length) ? x.numbers[x.length - 1 - i] : 0;
-			int diff = a - b - borrow;
-			if (diff < 0) {
-				diff += 10;
-				borrow = 1;
-			}
-			else {
-				borrow = 0;
-			}
-			result.numbers[result.length - 1 - i] = diff % 10;
-		}
-		if (borrow > 0) {
-			result.numbers[0] = borrow;
-		}
-		else {
-			result.length--;
-			for (int i = 0; i < result.length; i++) {
-				result.numbers[i] = result.numbers[i + 1];
-			}
-		}
-	}
-	else if (sign == -1 && x.sign == 1) {
-		LongNumber temp(*this);
-		temp.sign = 1;
-		return temp + x;
-	}
-	else if (sign == 1 && x.sign == -1) {
-		LongNumber temp(x);
-		temp.sign = 1;
-		return *this + temp;
-	}
-	return result;
+    if (sign == 1 && x.sign == 1) {
+        if (*this >= x) {
+            return subtract_abs(*this, x);
+        } else {
+            LongNumber result = subtract_abs(x, *this);
+            result.sign = -1;
+            return result;
+        }
+    } else if (sign == -1 && x.sign == -1) {
+        LongNumber temp1 = *this;
+        temp1.sign = 1;
+        LongNumber temp2 = x;
+        temp2.sign = 1;
+        return temp2 - temp1;
+    } else {
+        LongNumber temp = x;
+        temp.sign = (x.sign == 1) ? -1 : 1;
+        return *this + temp;
+    }
 }
 			
 
@@ -402,34 +337,47 @@ LongNumber LongNumber::operator / (const LongNumber& x) const {
 
     int resultSign = (sign == x.sign) ? 1 : -1;
 
-    LongNumber dividend = *this;
-    dividend.sign = 1;
-    LongNumber divisor = x;
-    divisor.sign = 1;
-	if (dividend < divisor) {
-        return LongNumber("0");
+    LongNumber dividend = this->abs();
+    LongNumber divisor = x.abs();
+    
+    if (dividend < divisor) {
+        LongNumber zero("0");
+        zero.sign = resultSign;
+        return zero;
     }
-	LongNumber quotient;
-    quotient.length = length;
-    quotient.numbers = new int[quotient.length]();
+
+    LongNumber quotient = divide_absolute(dividend, divisor);
     quotient.sign = resultSign;
+
+    if (sign != x.sign && !((*this % x) == 0)) {
+        quotient = quotient + LongNumber("-1");
+    }
+
+    return quotient;
+}
+
+LongNumber LongNumber::divide_absolute(const LongNumber& dividend, const LongNumber& divisor) const {
+    LongNumber quotient;
+    quotient.length = dividend.length;
+    quotient.numbers = new int[quotient.length]();
+    quotient.sign = 1;
 
     LongNumber currentValue("0");
 
-    for (int i = 0; i < length; i++) {
-        currentValue = currentValue * LongNumber("10");
-        currentValue = currentValue + LongNumber(numbers[i]);
+    for (int i = 0; i < dividend.length; i++) {
+        currentValue = currentValue * LongNumber("10") + LongNumber(dividend.numbers[i]);
 
         int digit = 0;
-        LongNumber multiple;
-        while (digit < 9) {
-            multiple = divisor * LongNumber(digit + 1);
+        while (digit <= 9) {
+            LongNumber multiple = divisor * LongNumber(digit);
             if (multiple > currentValue) {
+                digit--;
                 break;
             }
             digit++;
         }
-
+        
+        digit = std::max(0, digit);
         quotient.numbers[i] = digit;
 
         if (digit > 0) {
@@ -442,10 +390,6 @@ LongNumber LongNumber::operator / (const LongNumber& x) const {
         leadingZeros++;
     }
 
-    if (leadingZeros == quotient.length) {
-        return LongNumber("0");
-    }
-
     if (leadingZeros > 0) {
         int newLength = quotient.length - leadingZeros;
         int* newNumbers = new int[newLength];
@@ -456,12 +400,6 @@ LongNumber LongNumber::operator / (const LongNumber& x) const {
         quotient.numbers = newNumbers;
         quotient.length = newLength;
     }
-
-    // Если результат 0, знак должен быть положительным
-    if (quotient.length == 1 && quotient.numbers[0] == 0) {
-        quotient.sign = 1;
-    }
-
     return quotient;
 }
 
@@ -499,6 +437,57 @@ LongNumber LongNumber::operator % (const LongNumber& x) const {
     }
 
 	return remainder;
+}
+
+LongNumber LongNumber::abs() const {
+    LongNumber result = *this;
+    result.sign = 1;
+    return result;
+}
+
+LongNumber LongNumber::subtract_abs(const LongNumber& a, const LongNumber& b) const {
+    LongNumber result;
+    result.length = a.length;
+    result.sign = 1;
+    result.numbers = new int[result.length]();
+    
+    int borrow = 0;
+    for (int i = 0; i < a.length; i++) {
+        int digit_a = a.numbers[a.length - 1 - i];
+        int digit_b = (i < b.length) ? b.numbers[b.length - 1 - i] : 0;
+        int diff = digit_a - digit_b - borrow;
+        
+        if (diff < 0) {
+            diff += 10;
+            borrow = 1;
+        } else {
+            borrow = 0;
+        }
+        
+        result.numbers[result.length - 1 - i] = diff;
+    }
+    
+    int leading_zeros = 0;
+    while (leading_zeros < result.length && result.numbers[leading_zeros] == 0) {
+        leading_zeros++;
+    }
+    
+    if (leading_zeros == result.length) {
+        return LongNumber("0");
+    }
+    
+    if (leading_zeros > 0) {
+        int new_length = result.length - leading_zeros;
+        int* new_numbers = new int[new_length];
+        for (int i = 0; i < new_length; i++) {
+            new_numbers[i] = result.numbers[leading_zeros + i];
+        }
+        delete[] result.numbers;
+        result.numbers = new_numbers;
+        result.length = new_length;
+    }
+    
+    return result;
 }
 
 int LongNumber::get_digits_number() const noexcept {

@@ -33,6 +33,10 @@ namespace abc {
 			LongNumber operator * (const LongNumber& x) const;
 			LongNumber operator / (const LongNumber& x) const;
 			LongNumber operator % (const LongNumber& x) const;
+
+			LongNumber abs() const;
+			LongNumber subtract_abs(const LongNumber& a, const LongNumber& b) const;
+			LongNumber divide_absolute(const LongNumber& dividend, const LongNumber& divisor) const;
 			
 			int get_digits_number() const noexcept;
 			int get_rank_number(const int rank) const;
