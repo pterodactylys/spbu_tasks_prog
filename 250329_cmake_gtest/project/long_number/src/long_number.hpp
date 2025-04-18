@@ -32,7 +32,7 @@ namespace abc {
 			LongNumber operator - (const LongNumber& x) const;
 			LongNumber operator * (const LongNumber& x) const;
 			LongNumber operator / (const LongNumber& x) const;
-			// LongNumber operator % (const LongNumber& x) const;
+			LongNumber operator % (const LongNumber& x) const;
 			
 			// int get_digits_number() const noexcept;
 			// int get_rank_number(const int rank) const;

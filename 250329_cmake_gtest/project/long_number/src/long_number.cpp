@@ -400,35 +400,26 @@ LongNumber LongNumber::operator / (const LongNumber& x) const {
         throw std::runtime_error("Division by zero");
     }
 
-    // Определение знака результата
     int resultSign = (sign == x.sign) ? 1 : -1;
 
-    // Работа с абсолютными значениями
     LongNumber dividend = *this;
     dividend.sign = 1;
     LongNumber divisor = x;
     divisor.sign = 1;
-
-    // Если делимое меньше делителя, возвращаем 0
-    if (dividend < divisor) {
+	if (dividend < divisor) {
         return LongNumber("0");
     }
-
-    // Инициализация результата
-    LongNumber quotient;
+	LongNumber quotient;
     quotient.length = length;
     quotient.numbers = new int[quotient.length]();
     quotient.sign = resultSign;
 
-    LongNumber currentValue("0");  // Текущее частичное делимое
+    LongNumber currentValue("0");
 
-    // Деление в столбик
     for (int i = 0; i < length; i++) {
-        // "Спускаем" следующую цифру
-        currentValue = currentValue * LongNumber("10");  // Умножаем на 10 (сдвиг влево)
-        currentValue = currentValue + LongNumber(numbers[i]);  // Добавляем цифру
+        currentValue = currentValue * LongNumber("10");
+        currentValue = currentValue + LongNumber(numbers[i]);
 
-        // Находим максимальную цифру для частного (от 0 до 9)
         int digit = 0;
         LongNumber multiple;
         while (digit < 9) {
@@ -439,23 +430,20 @@ LongNumber LongNumber::operator / (const LongNumber& x) const {
             digit++;
         }
 
-        // Записываем цифру в результат
         quotient.numbers[i] = digit;
 
-        // Вычитаем из текущего значения
         if (digit > 0) {
             currentValue = currentValue - (divisor * LongNumber(digit));
         }
     }
 
-    // Удаление ведущих нулей
     int leadingZeros = 0;
     while (leadingZeros < quotient.length && quotient.numbers[leadingZeros] == 0) {
         leadingZeros++;
     }
 
     if (leadingZeros == quotient.length) {
-        return LongNumber("0");  // Частное = 0
+        return LongNumber("0");
     }
 
     if (leadingZeros > 0) {
@@ -477,11 +465,41 @@ LongNumber LongNumber::operator / (const LongNumber& x) const {
     return quotient;
 }
 
+LongNumber LongNumber::operator % (const LongNumber& x) const {
+	if (x.length == 1 && x.numbers[0] == 0) {
+		throw std::runtime_error("Division by zero");
+	}
 
+	LongNumber quotient = *this / x;
+	LongNumber product = quotient * x;
+	LongNumber remainder = *this - product;
 
-// LongNumber LongNumber::operator % (const LongNumber& x) const {
-// 	// TODO
-// }
+	if (remainder.sign == -1) {
+		remainder.sign = 1;
+		return remainder + x;
+	}
+	int leadingZeros = 0;
+    while (leadingZeros < remainder.length && remainder.numbers[leadingZeros] == 0) {
+        leadingZeros++;
+    }
+
+    if (leadingZeros == remainder.length) {
+        return LongNumber("0");
+    }
+
+    if (leadingZeros > 0) {
+        int newLength = remainder.length - leadingZeros;
+        int* newNumbers = new int[newLength];
+        for (int i = 0; i < newLength; i++) {
+            newNumbers[i] = remainder.numbers[leadingZeros + i];
+        }
+        delete[] remainder.numbers;
+        remainder.numbers = newNumbers;
+        remainder.length = newLength;
+    }
+
+	return remainder;
+}
 
 // int LongNumber::get_digits_number() const noexcept {
 // 	// TODO
