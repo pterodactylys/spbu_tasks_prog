@@ -35,8 +35,8 @@ namespace abc {
 			LongNumber operator % (const LongNumber& x) const;
 
 			LongNumber abs() const;
+			LongNumber divide_abs(const LongNumber& divisor) const;
 			LongNumber subtract_abs(const LongNumber& a, const LongNumber& b) const;
-			LongNumber divide_absolute(const LongNumber& dividend, const LongNumber& divisor) const;
 			
 			int get_digits_number() const noexcept;
 			int get_rank_number(const int rank) const;
@@ -45,6 +45,7 @@ namespace abc {
 			friend std::ostream& operator << (std::ostream &os, const LongNumber& x);
 			
 		private:
+			void remove_leading_zeros();
 			int get_length(const char* const str) const noexcept;
 	};
 }

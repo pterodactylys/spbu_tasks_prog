@@ -4,7 +4,13 @@
 using abc::LongNumber;
 
 int main() {
-    abc::LongNumber x("19602");
-    abc::LongNumber y("99");
-    std::cout << x / y << std::endl;
+    std::cout << " 100 / 6 = " << (LongNumber("100") / LongNumber("6")) << std::endl;
+    std::cout << "-100 / 6 = " << (LongNumber("-100") / LongNumber("6")) << std::endl;
+    std::cout << " 100 / -6 = " << (LongNumber("100") / LongNumber("-6")) << std::endl;
+    std::cout << "-100 / -6 = " << (LongNumber("-100") / LongNumber("-6")) << std::endl;
+    
+    std::cout << "-5 / 3 = " << (LongNumber("-5") / LongNumber("3")) << std::endl;
+    std::cout << "5 / -3 = " << (LongNumber("5") / LongNumber("-3")) << std::endl;
+    
+    return 0;
 }

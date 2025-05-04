@@ -264,7 +264,6 @@ LongNumber LongNumber::operator + (const LongNumber& x) const {
     }
 }
 
-
 LongNumber LongNumber::operator - (const LongNumber& x) const {
     if (sign == 1 && x.sign == 1) {
         if (*this >= x) {
@@ -287,156 +286,112 @@ LongNumber LongNumber::operator - (const LongNumber& x) const {
     }
 }
 			
-
 LongNumber LongNumber::operator * (const LongNumber& x) const {
-	LongNumber result;
-	result.length = length + x.length;
-	result.sign = sign * x.sign;
-	result.numbers = new int[result.length];
-	for (int i = 0; i < result.length; i++) {
-		result.numbers[i] = 0;
-	}
-	for (int i = 0; i < length; i++) {
-		int carry = 0;
-		for (int j = 0; j < x.length; j++) {
-			int product = numbers[length - 1 - i] * x.numbers[x.length - 1 - j] + carry + result.numbers[result.length - 1 - (i + j)];
-			result.numbers[result.length - 1 - (i + j)] = product % 10;
-			carry = product / 10;
-		}
-		if (carry > 0) {
-			result.numbers[result.length - 1 - (i + x.length)] += carry;
-		}
-	}
-	int leadingZeros = 0;
-	while (leadingZeros < result.length && result.numbers[leadingZeros] == 0) {
-		leadingZeros++;
-	}
-	if (leadingZeros == result.length) {
-		delete[] result.numbers;
-		result.length = 1;
-		result.numbers = new int[result.length];
-		result.numbers[0] = 0;
-	}
-	else {
-		int newLength = result.length - leadingZeros;
-		int* newNumbers = new int[newLength];
-		for (int i = 0; i < newLength; i++) {
-			newNumbers[i] = result.numbers[leadingZeros + i];
-		}
-		delete[] result.numbers;
-		result.numbers = newNumbers;
-		result.length = newLength;
-	}
-	return result;
+    LongNumber result;
+    result.length = length + x.length;
+    result.sign = sign * x.sign;
+    result.numbers = new int[result.length]();
+    
+    for (int i = 0; i < length; i++) {
+        int carry = 0;
+        for (int j = 0; j < x.length; j++) {
+            int product = numbers[length - 1 - i] * x.numbers[x.length - 1 - j] + 
+                         carry + 
+                         result.numbers[result.length - 1 - (i + j)];
+            result.numbers[result.length - 1 - (i + j)] = product % 10;
+            carry = product / 10;
+        }
+        if (carry > 0) {
+            result.numbers[result.length - 1 - (i + x.length)] += carry;
+        }
+    }
+    
+    result.remove_leading_zeros();
+    return result;
 }
 
 LongNumber LongNumber::operator / (const LongNumber& x) const {
-    if (x.length == 1 && x.numbers[0] == 0) {
+    if (x == LongNumber("0")) {
         throw std::runtime_error("Division by zero");
     }
-
-    int resultSign = (sign == x.sign) ? 1 : -1;
 
     LongNumber dividend = this->abs();
     LongNumber divisor = x.abs();
     
     if (dividend < divisor) {
         LongNumber zero("0");
-        zero.sign = resultSign;
+        zero.sign = sign * x.sign;
         return zero;
     }
 
-    LongNumber quotient = divide_absolute(dividend, divisor);
-    quotient.sign = resultSign;
-
-    if (sign != x.sign && !((*this % x) == 0)) {
-        quotient = quotient + LongNumber("-1");
-    }
-
-    return quotient;
-}
-
-LongNumber LongNumber::divide_absolute(const LongNumber& dividend, const LongNumber& divisor) const {
     LongNumber quotient;
-    quotient.length = dividend.length;
-    quotient.numbers = new int[quotient.length]();
-    quotient.sign = 1;
-
-    LongNumber currentValue("0");
+    LongNumber current;
 
     for (int i = 0; i < dividend.length; i++) {
-        currentValue = currentValue * LongNumber("10") + LongNumber(dividend.numbers[i]);
-
+        current = current * LongNumber("10") + LongNumber(dividend.numbers[i]);
+        
         int digit = 0;
-        while (digit <= 9) {
-            LongNumber multiple = divisor * LongNumber(digit);
-            if (multiple > currentValue) {
-                digit--;
-                break;
-            }
+        while (current >= divisor) {
+            current = current - divisor;
             digit++;
         }
         
-        digit = std::max(0, digit);
-        quotient.numbers[i] = digit;
-
-        if (digit > 0) {
-            currentValue = currentValue - (divisor * LongNumber(digit));
+        if (quotient.length == 0 && digit == 0) {
+            continue;
         }
-    }
-
-    int leadingZeros = 0;
-    while (leadingZeros < quotient.length && quotient.numbers[leadingZeros] == 0) {
-        leadingZeros++;
-    }
-
-    if (leadingZeros > 0) {
-        int newLength = quotient.length - leadingZeros;
-        int* newNumbers = new int[newLength];
-        for (int i = 0; i < newLength; i++) {
-            newNumbers[i] = quotient.numbers[leadingZeros + i];
+    
+        int* newNumbers = new int[quotient.length + 1];
+        for (int j = 0; j < quotient.length; j++) {
+            newNumbers[j] = quotient.numbers[j];
         }
+        newNumbers[quotient.length] = digit;
         delete[] quotient.numbers;
         quotient.numbers = newNumbers;
-        quotient.length = newLength;
+        quotient.length++;
     }
+    
+    if (quotient.length == 0) {
+        quotient = LongNumber("0");
+    }
+    
+    quotient.sign = sign * x.sign;
+    
+    if (sign != x.sign && current != LongNumber("0")) {
+        quotient = quotient - LongNumber("1");
+    }
+    
+    // Удаляем ведущие нули
+    quotient.remove_leading_zeros();
     return quotient;
 }
 
 LongNumber LongNumber::operator % (const LongNumber& x) const {
-	if (x.length == 1 && x.numbers[0] == 0) {
-		throw std::runtime_error("Division by zero");
-	}
-
-	LongNumber quotient = *this / x;
-	LongNumber product = quotient * x;
-	LongNumber remainder = *this - product;
-
-	if (remainder.sign == -1) {
-		remainder.sign = 1;
-		return remainder + x;
-	}
-	int leadingZeros = 0;
-    while (leadingZeros < remainder.length && remainder.numbers[leadingZeros] == 0) {
-        leadingZeros++;
+    if (x == LongNumber("0")) {
+        throw std::runtime_error("Division by zero");
     }
 
-    if (leadingZeros == remainder.length) {
-        return LongNumber("0");
-    }
-
-    if (leadingZeros > 0) {
-        int newLength = remainder.length - leadingZeros;
-        int* newNumbers = new int[newLength];
-        for (int i = 0; i < newLength; i++) {
-            newNumbers[i] = remainder.numbers[leadingZeros + i];
+    LongNumber dividend = this->abs();
+    LongNumber divisor = x.abs();
+    
+    LongNumber remainder;
+    
+    for (int i = 0; i < dividend.length; i++) {
+        remainder = remainder * LongNumber("10") + LongNumber(dividend.numbers[i]);
+        
+        while (remainder >= divisor) {
+            remainder = remainder - divisor;
         }
-        delete[] remainder.numbers;
-        remainder.numbers = newNumbers;
-        remainder.length = newLength;
     }
-
-	return remainder;
+    
+    if (this->sign == -1) {
+        remainder.sign = -1;
+    }
+    
+    if (remainder.sign == -1) {
+        remainder = remainder + divisor;
+    }
+    
+    return remainder;
 }
 
 LongNumber LongNumber::abs() const {
@@ -467,26 +422,7 @@ LongNumber LongNumber::subtract_abs(const LongNumber& a, const LongNumber& b) co
         result.numbers[result.length - 1 - i] = diff;
     }
     
-    int leading_zeros = 0;
-    while (leading_zeros < result.length && result.numbers[leading_zeros] == 0) {
-        leading_zeros++;
-    }
-    
-    if (leading_zeros == result.length) {
-        return LongNumber("0");
-    }
-    
-    if (leading_zeros > 0) {
-        int new_length = result.length - leading_zeros;
-        int* new_numbers = new int[new_length];
-        for (int i = 0; i < new_length; i++) {
-            new_numbers[i] = result.numbers[leading_zeros + i];
-        }
-        delete[] result.numbers;
-        result.numbers = new_numbers;
-        result.length = new_length;
-    }
-    
+    result.remove_leading_zeros();
     return result;
 }
 
@@ -508,6 +444,33 @@ bool LongNumber::is_negative() const noexcept {
 // ----------------------------------------------------------
 // PRIVATE
 // ----------------------------------------------------------
+void LongNumber::remove_leading_zeros() {
+    int leading_zeros = 0;
+    while (leading_zeros < length && numbers[leading_zeros] == 0) {
+        leading_zeros++;
+    }
+    
+    if (leading_zeros == length) {
+        delete[] numbers;
+        length = 1;
+        numbers = new int[1];
+        numbers[0] = 0;
+        sign = 1;
+        return;
+    }
+    
+    if (leading_zeros > 0) {
+        int new_length = length - leading_zeros;
+        int* new_numbers = new int[new_length];
+        for (int i = 0; i < new_length; i++) {
+            new_numbers[i] = numbers[leading_zeros + i];
+        }
+        delete[] numbers;
+        numbers = new_numbers;
+        length = new_length;
+    }
+}
+
 int LongNumber::get_length(const char* const str) const noexcept {
 	int count = 0;
 	while (str[count] != '\0') {
