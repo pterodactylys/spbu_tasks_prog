@@ -6,7 +6,7 @@ namespace abc {
 	template <typename T> 
 	class Vector {
 		private:
-			static const std::size_t START_CAPACITY;
+			static constexpr std::size_t START_CAPACITY = 10;
 
 			T* arr = nullptr;
 			std::size_t capacity = START_CAPACITY;
@@ -14,8 +14,8 @@ namespace abc {
 
 		public:
 			Vector();
-			Vector(const Vector&) = delete;
-			Vector& operator = (const Vector&) = delete;
+			Vector(const Vector&);
+			Vector& operator = (const Vector& other);
 			~Vector();
 			
 			std::size_t get_size() const noexcept;
