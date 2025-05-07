@@ -356,12 +356,25 @@ LongNumber LongNumber::operator / (const LongNumber& x) const {
     
     quotient.sign = sign * x.sign;
     
-    if (sign != x.sign && current != LongNumber("0")) {
+    /*if (sign != x.sign && current != LongNumber("0")) {
         quotient = quotient - LongNumber("1");
-    }
+    }*/
     
     // Удаляем ведущие нули
     quotient.remove_leading_zeros();
+  
+    if (current > 0) {
+        if (x.sign < 0) {
+            if (sign < 0) {
+                quotient = quotient + LongNumber("1");
+            }
+        } else {
+            if (sign < 0) {
+                quotient = quotient - LongNumber("1");
+            }
+        }
+    }
+  
     return quotient;
 }
 
