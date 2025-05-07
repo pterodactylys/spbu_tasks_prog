@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-using biv::Vector;
+using abc::Vector;
 
 template<typename T>
 Vector<T>::Vector() {
