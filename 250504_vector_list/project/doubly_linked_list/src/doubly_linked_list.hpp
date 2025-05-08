@@ -22,9 +22,9 @@ namespace abc {
 			Node* end = nullptr;
 
 		public:
-			DoublyLinkedList() noexcept {};
-			DoublyLinkedList(const DoublyLinkedList&) = delete;
-			DoublyLinkedList& operator = (const DoublyLinkedList&) = delete;
+			DoublyLinkedList() noexcept;
+			DoublyLinkedList(const DoublyLinkedList& other);
+			DoublyLinkedList& operator = (const DoublyLinkedList& other);
 			~DoublyLinkedList();
 			
 			std::size_t get_size() const noexcept;
