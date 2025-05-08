@@ -8,4 +8,4 @@ enable_testing()
 add_subdirectory(lib/googletest)
 
 add_subdirectory(vector)
-add_subdirectory(doubly_linked_list)
+
