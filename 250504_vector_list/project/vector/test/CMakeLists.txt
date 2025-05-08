@@ -1,7 +1,7 @@
-add_executable(ibusko_test 
+add_executable(vector_test 
 	test_vector.cpp)
-target_link_libraries(ibusko_test
+target_link_libraries(vector_test
     gtest_main
     vector_lib
 )
-add_test(ibusko_test ibusko_test)
+add_test(vector_test vector_test)
