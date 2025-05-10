@@ -53,6 +53,11 @@ std::size_t Vector<T>::get_size() const noexcept {
 }
 
 template<typename T>
+std::size_t Vector<T>::get_capacity() const noexcept {
+	return capacity;
+}
+
+template<typename T>
 bool Vector<T>::has_item(const T& value) const noexcept {
 	for (std::size_t i = 0; i < size; ++i) {
 		if (arr[i] == value) {
@@ -110,16 +115,29 @@ void Vector<T>::push_back(const T& value) {
 
 template<typename T>
 bool Vector<T>::remove_first(const T& value) {
-	for (std::size_t i = 0; i < size; ++i) {
-		if (arr[i] == value) {
-			for (std::size_t j = i; j < size - 1; ++j) {
-				arr[j] = arr[j + 1];
-			}
-			size--;
-			return true;
-		}
-	}
-	return false;
+    if (size == 0) return false;
+
+    for (std::size_t i = 0; i < size; ++i) {
+        if (arr[i] == value) {
+            for (std::size_t j = i; j < size - 1; ++j) {
+                arr[j] = arr[j + 1];
+            }
+            size--;
+
+            if (capacity > 2 * size && capacity > START_CAPACITY) {
+                capacity /= 2;
+                T* new_arr = new T[capacity];
+                for (std::size_t k = 0; k < size; ++k) {
+                    new_arr[k] = arr[k];
+                }
+                delete[] arr;
+                arr = new_arr;
+            }
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 template class Vector<int>;

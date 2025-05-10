@@ -19,6 +19,7 @@ namespace abc {
 			~Vector();
 			
 			std::size_t get_size() const noexcept;
+			std::size_t get_capacity() const noexcept;
 			bool has_item(const T& value) const noexcept;
 			bool insert(const std::size_t position, const T& value);
 			void print() const noexcept;
