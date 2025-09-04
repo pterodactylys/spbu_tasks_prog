@@ -72,8 +72,8 @@ bool IsOnMap(TObject obj) {
 }
 
 bool IsCollide(TObject obj1, TObject obj2) {
-    return !((obj1.x + obj1.w < obj2.x) || (obj1.x > obj2.x + obj2.w) ||
-             (obj1.y + obj1.h < obj2.y) || (obj1.y > obj2.y + obj2.h));
+    return !((obj1.x + obj1.w <= obj2.x) || (obj1.x >= obj2.x + obj2.w) ||
+             (obj1.y + obj1.h <= obj2.y) || (obj1.y >= obj2.y + obj2.h));
 }
 
 void CreateLevel() {
@@ -116,6 +116,9 @@ void HorizontalMapMove(float dx) {
             mario.x += dx;
             return;
         }
+    }
+    mario.x += dx;
+    for (int i = 0; i < blockCount; i++) {
         block[i].x += dx;
     }
 }
