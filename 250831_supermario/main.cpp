@@ -19,10 +19,11 @@ char map[mapHeight][mapWidth + 1];
 TObject mario;
 TObject *block = NULL;
 int blockCount;
+int level = 1;
 
 void ClearMap() {
     for (int i = 0; i < mapWidth; i++) {
-        map[0][i] = '.';
+        map[0][i] = ' ';
     }
     map[0][mapWidth] = '\0';
     for (int j = 0; j < mapHeight; j++) {
@@ -52,6 +53,7 @@ void InitObject(TObject* obj, float xPos, float yPos, float width,
 }
 
 bool IsCollide(TObject obj1, TObject obj2);
+void CreateLevel(int lvl);
 
 void VerticalMove(TObject* obj) {
     (*obj).vy += 0.05;
@@ -63,6 +65,16 @@ void VerticalMove(TObject* obj) {
             (*obj).y -= ((*obj).vy);
             (*obj).vy = 0;
             (*obj).IsFLy = false;
+            if (block[i].type == '+') {
+                if (level == 1) {
+                    level = 2;
+                }
+                else {
+                    level = 1;
+                }
+                CreateLevel(level);
+                Sleep(1000);
+            }
             break;
         }
     }       
@@ -78,16 +90,34 @@ bool IsCollide(TObject obj1, TObject obj2) {
              (obj1.y + obj1.h <= obj2.y) || (obj1.y >= obj2.y + obj2.h));
 }
 
-void CreateLevel() {
+void CreateLevel(int lvl) {
+    if (lvl == 1) {
     InitObject(&mario, 39, 10, 3, 3, '@');
     
-    blockCount = 5;
+    blockCount = 6;
     block = (TObject*)realloc(block, blockCount * sizeof(TObject));
     InitObject(block+0, 20, 20, 40, 5, '#');
     InitObject(block+1, 60, 15, 10, 10, '#');
     InitObject(block+2, 80, 20, 20, 5, '#');
     InitObject(block+3, 120, 15, 10, 10, '#');
     InitObject(block+4, 150, 20, 40, 5, '#');
+    InitObject(block+5, 210, 15, 10, 10, '+');
+    }
+
+    if (lvl == 2) {
+    InitObject(&mario, 39, 10, 3, 3, '@');
+
+    blockCount = 8;
+    block = (TObject*)realloc(block, blockCount * sizeof(TObject));
+    InitObject(block+0, 20, 20, 40, 5, '#');
+    InitObject(block+1, 60, 15, 10, 10, '#');
+    InitObject(block+2, 80, 20, 20, 5, '#');
+    InitObject(block+3, 120, 15, 10, 10, '#');
+    InitObject(block+4, 150, 20, 40, 5, '#');
+    InitObject(block+5, 210, 15, 10, 10, '#');
+    InitObject(block+6, 240, 10, 10, 10, '#');
+    InitObject(block+7, 270, 5, 10, 10, '+');
+    }
 }
 
 void PlaceObject(TObject obj) {
@@ -127,7 +157,8 @@ void HorizontalMapMove(float dx) {
 }
 
 int main() {
-    CreateLevel();
+    CreateLevel(level);
+    system("color 0B");
 
     do {
     ClearMap();
@@ -144,7 +175,7 @@ int main() {
     }
     
     if (mario.y > mapHeight) {
-        CreateLevel();
+        CreateLevel(level);
     }
 
     VerticalMove(&mario);
