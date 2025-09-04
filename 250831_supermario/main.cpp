@@ -12,6 +12,7 @@ typedef struct SObject {
     float w, h;
     float vy;
     bool IsFLy;
+    char type;
 } TObject;
 
 char map[mapHeight][mapWidth + 1];
@@ -42,11 +43,12 @@ void SetObjectPos(TObject* obj, float xPos, float yPos) {
 }
 
 void InitObject(TObject* obj, float xPos, float yPos, float width,
-                float height) {
+                float height, char ctype) {
     SetObjectPos(obj, xPos, yPos);
     (*obj).w = width;
     (*obj).h = height;
     (*obj).vy = 0;
+    (*obj).type = ctype;
 }
 
 bool IsCollide(TObject obj1, TObject obj2);
@@ -77,14 +79,15 @@ bool IsCollide(TObject obj1, TObject obj2) {
 }
 
 void CreateLevel() {
-    InitObject(&mario, 39, 10, 3, 3);
+    InitObject(&mario, 39, 10, 3, 3, '@');
+    
     blockCount = 5;
-    block = (TObject*)malloc(sizeof(TObject) * blockCount);
-    InitObject(block+0, 20, 20, 40, 5);
-    InitObject(block+1, 60, 15, 10, 10);
-    InitObject(block+2, 80, 20, 20, 5);
-    InitObject(block+3, 120, 15, 10, 10);
-    InitObject(block+4, 150, 20, 40, 5);
+    block = (TObject*)realloc(block, blockCount * sizeof(TObject));
+    InitObject(block+0, 20, 20, 40, 5, '#');
+    InitObject(block+1, 60, 15, 10, 10, '#');
+    InitObject(block+2, 80, 20, 20, 5, '#');
+    InitObject(block+3, 120, 15, 10, 10, '#');
+    InitObject(block+4, 150, 20, 40, 5, '#');
 }
 
 void PlaceObject(TObject obj) {
@@ -96,7 +99,7 @@ void PlaceObject(TObject obj) {
     for (int i = ix; i < (ix + iw); i++) {
         for (int j = iy; j < (iy + ih); j++) {
             if (IsOnMap(obj)) {
-            map[j][i] = '@';
+            map[j][i] = obj.type;
             }
         }
     }
@@ -138,6 +141,10 @@ int main() {
     }
     if (GetKeyState(VK_RIGHT) < 0) {
         HorizontalMapMove(-1);
+    }
+    
+    if (mario.y > mapHeight) {
+        CreateLevel();
     }
 
     VerticalMove(&mario);
