@@ -7,6 +7,17 @@
 #define mapWidth 120
 #define mapHeight 30
 
+#define GRAVITY 0.05
+#define JUMP_VELOCITY -1.0
+#define PLAYER_VELOCITY 1
+#define PLAYER_WIDTH 3
+#define PLAYER_HEIGHT 3
+
+#define MONSTER_REWARD 50
+#define COIN_REWARD 100
+
+#define DEFAULT_VELOCITY 0.2
+
 typedef struct SObject {
     float x, y;
     float w, h;
@@ -58,7 +69,7 @@ void InitObject(TObject* obj, float xPos, float yPos, float width,
     (*obj).vy = 0;
     (*obj).type = ctype;
     (*obj).IsFLy = false;
-    (*obj).vx = 0.2;
+    (*obj).vx = DEFAULT_VELOCITY;
 }
 
 void CreateLevel(int lvl);
@@ -73,7 +84,7 @@ bool IsCollide(TObject obj1, TObject obj2);
 TObject *AddNewMoving();
 
 void VerticalMove(TObject* obj) {
-    (*obj).vy += 0.05;
+    (*obj).vy += GRAVITY;
     (*obj).IsFLy = true;
     SetObjectPos(obj, (*obj).x, (*obj).y + (*obj).vy);
 
@@ -114,7 +125,7 @@ void MarioCollision() {
             if (moving[i].type == 'o') {
                 if (mario.IsFLy && (mario.vy > 0) && 
             mario.y + mario.h < moving[i].y + moving[i].h / 2) {
-                    score += 50;
+                    score += MONSTER_REWARD;
                     DeleteMoving(i);
                     i--;
                     continue;
@@ -124,7 +135,7 @@ void MarioCollision() {
                 }
             }
             if (moving[i].type == '$') {
-                score += 100;
+                score += COIN_REWARD;
                 DeleteMoving(i);
                 i--;
                 continue;
@@ -199,7 +210,7 @@ void CreateLevel(int lvl) {
     movingCount = 0;
     moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
 
-    InitObject(&mario, 39, 10, 3, 3, '@');
+    InitObject(&mario, 39, 10, PLAYER_WIDTH, PLAYER_HEIGHT, '@');
     score = 0;
 
     if (lvl == 1) {
@@ -304,14 +315,14 @@ int main() {
     ClearMap();
 
     if ((GetKeyState(VK_SPACE) < 0) && (!mario.IsFLy)) {
-        mario.vy = -1.2;
+        mario.vy = JUMP_VELOCITY;
     }
 
     if (GetKeyState(VK_LEFT) < 0) {
-        HorizontalMapMove(1);
+        HorizontalMapMove(PLAYER_VELOCITY);
     }
     if (GetKeyState(VK_RIGHT) < 0) {
-        HorizontalMapMove(-1);
+        HorizontalMapMove(-PLAYER_VELOCITY);
     }
     
     if (mario.y > mapHeight) {
@@ -327,7 +338,7 @@ int main() {
     for (int i = 0; i < movingCount; i++) {
         VerticalMove(moving + i);
         HorizontalMove(moving + i);
-        if (moving[i].y < 0) {
+        if (moving[i].y < -10) {
             DeleteMoving(i);
             i--;
             continue;
