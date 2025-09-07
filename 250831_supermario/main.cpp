@@ -13,12 +13,17 @@ typedef struct SObject {
     float vy;
     bool IsFLy;
     char type;
+    float vx;
 } TObject;
 
 char map[mapHeight][mapWidth + 1];
 TObject mario;
 TObject *block = NULL;
 int blockCount;
+
+TObject *moving = NULL;
+int movingCount;
+
 int level = 1;
 
 void ClearMap() {
@@ -50,6 +55,8 @@ void InitObject(TObject* obj, float xPos, float yPos, float width,
     (*obj).h = height;
     (*obj).vy = 0;
     (*obj).type = ctype;
+    (*obj).IsFLy = false;
+    (*obj).vx = 0.2;
 }
 
 bool IsCollide(TObject obj1, TObject obj2);
@@ -80,6 +87,17 @@ void VerticalMove(TObject* obj) {
     }       
 }
 
+void HorizontalMove(TObject* obj) {
+    obj[0].x += obj[0].vx;
+    for (int i = 0; i < blockCount; i++) {
+        if (IsCollide(*obj, block[i])) {
+            obj[0].x -= obj[0].vx;
+            obj[0].vx = -obj[0].vx;
+            return;
+        }
+    }
+}
+
 bool IsOnMap(TObject obj) {
     return ((obj.y + obj.h) < mapHeight) && (obj.y >= 0) && ((obj.x + obj.w) < mapWidth) &&
            (obj.x >= 0);
@@ -102,6 +120,9 @@ void CreateLevel(int lvl) {
     InitObject(block+3, 120, 15, 10, 10, '#');
     InitObject(block+4, 150, 20, 40, 5, '#');
     InitObject(block+5, 210, 15, 10, 10, '+');
+    movingCount = 1;  
+    moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
+    InitObject(moving+0, 25, 10, 3, 2, 'o');
     }
 
     if (lvl == 2) {
@@ -154,6 +175,9 @@ void HorizontalMapMove(float dx) {
     for (int i = 0; i < blockCount; i++) {
         block[i].x += dx;
     }
+    for (int i = 0; i < movingCount; i++) {
+        moving[i].x += dx;
+    }
 }
 
 int main() {
@@ -182,6 +206,12 @@ int main() {
     for (int i = 0; i < blockCount; i++) {
         PlaceObject(block[i]);
     }
+    for (int i = 0; i < movingCount; i++) {
+        VerticalMove(moving + i);
+        HorizontalMove(moving + i);
+        PlaceObject(moving[i]);
+    }    
+
     PlaceObject(mario);
     setCursorPosition(0, 0);
     PrintMap();
