@@ -49,7 +49,7 @@ void HorizontalMove(TObject* obj);
 void InitObject(TObject* obj, float xPos, float yPos, float width,
                 float height, char ctype);
 bool IsCollide(TObject obj1, TObject obj2);
-bool IsOnMap(TObject obj);
+bool IsOnMap(int x, int y);
 void MarioCollision();
 void PlaceObject(TObject obj);
 void PlayerDeath();
@@ -259,9 +259,9 @@ bool IsCollide(TObject obj1, TObject obj2) {
            (obj1.y < (obj2.y + obj2.h)) && ((obj1.y + obj1.h) > obj2.y);
 }
 
-bool IsOnMap(TObject obj) {
-    return ((obj.y + obj.h) < mapHeight) && (obj.y >= 0) && ((obj.x + obj.w) < mapWidth) &&
-           (obj.x >= 0);
+bool IsOnMap(int x, int y) {
+    return ( (x >= 0) && (x < mapWidth) && 
+             (y >= 0) && (y < mapHeight) );
 }
 
 void MarioCollision() {
@@ -297,7 +297,7 @@ void PlaceObject(TObject obj) {
 
     for (int i = ix; i < (ix + iw); i++) {
         for (int j = iy; j < (iy + ih); j++) {
-            if (IsOnMap(obj)) {
+            if (IsOnMap(i, j)) {
             map[j][i] = obj.type;
             }
         }
