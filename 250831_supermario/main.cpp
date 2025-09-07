@@ -99,18 +99,26 @@ void DeleteMoving(int i) {
 void MarioCollision() {
     for (int i = 0; i < movingCount; i++) {
         if (IsCollide(mario, moving[i])) {
-            if (mario.IsFLy && (mario.vy > 0) && 
-        mario.y + mario.h < moving[i].y + moving[i].h / 2) {
+            if (moving[i].type == 'o') {
+                if (mario.IsFLy && (mario.vy > 0) && 
+            mario.y + mario.h < moving[i].y + moving[i].h / 2) {
+                    DeleteMoving(i);
+                    i--;
+                    continue;
+                }
+                else {
+                    CreateLevel(level);
+                }
+            }
+            if (moving[i].type == '$') {
                 DeleteMoving(i);
                 i--;
                 continue;
             }
-            else {
-                CreateLevel(level);
-            }
         }
     }
 }
+
 
 void HorizontalMove(TObject* obj) {
     obj[0].x += obj[0].vx;
