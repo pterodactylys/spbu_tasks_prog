@@ -58,9 +58,15 @@ void InitObject(TObject* obj, float xPos, float yPos, float width,
     (*obj).IsFLy = false;
     (*obj).vx = 0.2;
 }
+void CreateLevel(int lvl);
+
+void PlayerDeath() {
+    system("color 4F");
+    Sleep(500);
+    CreateLevel(level);
+}
 
 bool IsCollide(TObject obj1, TObject obj2);
-void CreateLevel(int lvl);
 TObject *AddNewMoving();
 
 void VerticalMove(TObject* obj) {
@@ -82,8 +88,10 @@ void VerticalMove(TObject* obj) {
             if (block[i].type == '+') {
                 level++;
                 if (level > 3) level = 1;
+
+                system("color 2F");
+                Sleep(500);
                 CreateLevel(level);
-                Sleep(1000);
             }
             break;
         }
@@ -107,7 +115,7 @@ void MarioCollision() {
                     continue;
                 }
                 else {
-                    CreateLevel(level);
+                    PlayerDeath();
                 }
             }
             if (moving[i].type == '$') {
@@ -162,6 +170,9 @@ TObject *AddNewMoving() {
 }
 
 void CreateLevel(int lvl) {
+
+    system("color 0B");
+
     blockCount = 0;
     block = (TObject*)realloc(block, blockCount * sizeof(TObject));
     movingCount = 0;
@@ -174,10 +185,18 @@ void CreateLevel(int lvl) {
             InitObject(AddNewBlock(), 30, 10, 5, 3, '?');
             InitObject(AddNewBlock(), 50, 10, 5, 3, '?');
         InitObject(AddNewBlock(), 60, 15, 40, 10, '#');
+            InitObject(AddNewBlock(), 60, 5, 10, 3, '-');
+            InitObject(AddNewBlock(), 70, 5, 5, 3, '?');
+            InitObject(AddNewBlock(), 75, 5, 5, 3, '-');
+            InitObject(AddNewBlock(), 80, 5, 5, 3, '?');
+            InitObject(AddNewBlock(), 85, 5, 10, 3, '-');
         InitObject(AddNewBlock(), 100, 20, 20, 5, '#');
         InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
         InitObject(AddNewBlock(), 150, 20, 40, 5, '#');
         InitObject(AddNewBlock(), 210, 15, 10, 10, '+');
+
+        InitObject(AddNewMoving(), 25, 10, 3, 2, 'o');
+        InitObject(AddNewMoving(), 80, 10, 3, 2, 'o');
     }
 
     if (lvl == 2) {
@@ -257,7 +276,6 @@ void HorizontalMapMove(float dx) {
 
 int main() {
     CreateLevel(level);
-    system("color 0B");
 
     do {
     ClearMap();
@@ -274,7 +292,7 @@ int main() {
     }
     
     if (mario.y > mapHeight) {
-        CreateLevel(level);
+        PlayerDeath();
     }
 
     VerticalMove(&mario);
