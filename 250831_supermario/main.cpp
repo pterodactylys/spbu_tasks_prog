@@ -26,6 +26,7 @@ int movingCount;
 
 int level = 1;
 int score;
+int maxlvl;
 
 void ClearMap() {
     for (int i = 0; i < mapWidth; i++) {
@@ -90,7 +91,7 @@ void VerticalMove(TObject* obj) {
             (*obj).vy = 0;
             if (block[i].type == '+') {
                 level++;
-                if (level > 3) level = 1;
+                if (level > maxlvl) level = 1;
 
                 system("color 2F");
                 Sleep(500);
@@ -176,10 +177,16 @@ TObject *AddNewMoving() {
 
 void ShowScore() {
     char c[30];
+    char s[10];
     sprintf(c, "Score: %d", score);
-    int len = strlen(c);
-    for (int i = 0; i < len; i++) {
+    sprintf(s, "Lvl: %d", level);
+    int len_c = strlen(c);
+    int len_s = strlen(s);
+    for (int i = 0; i < len_c; i++) {
         map[1][i + 5] = c[i];
+    }
+    for (int i = 0; i < len_s; i++) {
+        map[1][mapWidth - len_s - 5 + i] = s[i];
     }
 }
 
@@ -248,6 +255,7 @@ void CreateLevel(int lvl) {
         InitObject(AddNewMoving(), 210, 5, 3, 2, '+');
 
     }
+    maxlvl = 3;
 }
 
 void PlaceObject(TObject obj) {
