@@ -25,6 +25,7 @@ TObject *moving = NULL;
 int movingCount;
 
 int level = 1;
+int score;
 
 void ClearMap() {
     for (int i = 0; i < mapWidth; i++) {
@@ -58,6 +59,7 @@ void InitObject(TObject* obj, float xPos, float yPos, float width,
     (*obj).IsFLy = false;
     (*obj).vx = 0.2;
 }
+
 void CreateLevel(int lvl);
 
 void PlayerDeath() {
@@ -82,6 +84,7 @@ void VerticalMove(TObject* obj) {
             if ((block[i].type == '?') && (obj[0].vy < 0) && (obj == &mario)) {
                 block[i].type = '-';
                 InitObject(AddNewMoving(), block[i].x, block[i].y - 3, 3, 2, '$');
+                moving[movingCount - 1].vy = -0.7;
             }
             (*obj).y -= ((*obj).vy);
             (*obj).vy = 0;
@@ -110,6 +113,7 @@ void MarioCollision() {
             if (moving[i].type == 'o') {
                 if (mario.IsFLy && (mario.vy > 0) && 
             mario.y + mario.h < moving[i].y + moving[i].h / 2) {
+                    score += 50;
                     DeleteMoving(i);
                     i--;
                     continue;
@@ -119,6 +123,7 @@ void MarioCollision() {
                 }
             }
             if (moving[i].type == '$') {
+                score += 100;
                 DeleteMoving(i);
                 i--;
                 continue;
@@ -169,6 +174,15 @@ TObject *AddNewMoving() {
     return moving + (movingCount - 1);
 }
 
+void ShowScore() {
+    char c[30];
+    sprintf(c, "Score: %d", score);
+    int len = strlen(c);
+    for (int i = 0; i < len; i++) {
+        map[1][i + 5] = c[i];
+    }
+}
+
 void CreateLevel(int lvl) {
 
     system("color 0B");
@@ -179,6 +193,7 @@ void CreateLevel(int lvl) {
     moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
 
     InitObject(&mario, 39, 10, 3, 3, '@');
+    score = 0;
 
     if (lvl == 1) {
         InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
@@ -313,6 +328,7 @@ int main() {
     }    
 
     PlaceObject(mario);
+    ShowScore();
     setCursorPosition(0, 0);
     PrintMap();
 
