@@ -44,6 +44,7 @@ TObject *AddNewMoving();
 void ClearMap();
 void CreateLevel(int lvl);
 void DeleteMoving(int i);
+void HideCursor();
 void HorizontalMapMove(float dx);
 void HorizontalMove(TObject* obj);
 void InitObject(TObject* obj, float xPos, float yPos, float width,
@@ -56,11 +57,13 @@ void PlayerDeath();
 void PrintMap();
 void setCursorPosition(int x, int y);
 void SetObjectPos(TObject* obj, float xPos, float yPos);
+void ShowCursor();
 void ShowScore();
 void VerticalMove(TObject* obj);
 
 
 int main() {
+    HideCursor();
     CreateLevel(level);
 
     do {
@@ -106,7 +109,7 @@ int main() {
     Sleep(10);
     }
     while (GetKeyState(VK_ESCAPE) >= 0);
-
+    ShowCursor();
     return 0;
 }
 
@@ -205,6 +208,11 @@ void DeleteMoving(int i) {
     movingCount--;
     moving[i] = moving[movingCount];
     moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
+}
+
+void HideCursor() {
+    CONSOLE_CURSOR_INFO cursorInfo = {1, 0};
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
 }
 
 void HorizontalMapMove(float dx) {
@@ -327,6 +335,11 @@ void setCursorPosition(int x, int y) {
 void SetObjectPos(TObject* obj, float xPos, float yPos) {
     (*obj).x = xPos;
     (*obj).y = yPos;
+}
+
+void ShowCursor() {
+    CONSOLE_CURSOR_INFO cursorInfo = {1, 1};
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
 }
 
 void ShowScore() {
