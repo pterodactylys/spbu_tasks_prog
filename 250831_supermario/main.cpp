@@ -61,6 +61,7 @@ void InitObject(TObject* obj, float xPos, float yPos, float width,
 
 bool IsCollide(TObject obj1, TObject obj2);
 void CreateLevel(int lvl);
+TObject *AddNewMoving();
 
 void VerticalMove(TObject* obj) {
     (*obj).vy += 0.05;
@@ -69,16 +70,18 @@ void VerticalMove(TObject* obj) {
 
     for (int i = 0; i < blockCount; i++) {
         if (IsCollide(*obj, block[i])) {
+            if (obj[0].vy > 0) {
+                obj[0].IsFLy = false;
+            }
+            if ((block[i].type == '?') && (obj[0].vy < 0) && (obj == &mario)) {
+                block[i].type = '-';
+                InitObject(AddNewMoving(), block[i].x, block[i].y - 3, 3, 2, '$');
+            }
             (*obj).y -= ((*obj).vy);
             (*obj).vy = 0;
-            (*obj).IsFLy = false;
             if (block[i].type == '+') {
-                if (level == 1) {
-                    level = 2;
-                }
-                else {
-                    level = 1;
-                }
+                level++;
+                if (level > 3) level = 1;
                 CreateLevel(level);
                 Sleep(1000);
             }
@@ -118,11 +121,13 @@ void HorizontalMove(TObject* obj) {
             return;
         }
     }
-    TObject temp = *obj;
-    VerticalMove(&temp);
-    if (temp.IsFLy) {
-        obj[0].x -= obj[0].vx;
-        obj[0].vx = -obj[0].vx;
+    if (obj[0].type == 'o') {
+        TObject temp = *obj;
+        VerticalMove(&temp);
+        if (temp.IsFLy) {
+            obj[0].x -= obj[0].vx;
+            obj[0].vx = -obj[0].vx;
+        }
     }
 }
 
@@ -132,8 +137,8 @@ bool IsOnMap(TObject obj) {
 }
 
 bool IsCollide(TObject obj1, TObject obj2) {
-    return !((obj1.x + obj1.w <= obj2.x) || (obj1.x >= obj2.x + obj2.w) ||
-             (obj1.y + obj1.h <= obj2.y) || (obj1.y >= obj2.y + obj2.h));
+    return (obj1.x < (obj2.x + obj2.w)) && ((obj1.x + obj1.w) > obj2.x) &&
+           (obj1.y < (obj2.y + obj2.h)) && ((obj1.y + obj1.h) > obj2.y);
 }
 
 TObject *AddNewBlock() {
@@ -149,44 +154,56 @@ TObject *AddNewMoving() {
 }
 
 void CreateLevel(int lvl) {
-    if (lvl == 1) {
-    InitObject(&mario, 39, 10, 3, 3, '@');
-    
     blockCount = 0;
-    InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
-    InitObject(AddNewBlock(), 60, 15, 10, 10, '#');
-    InitObject(AddNewBlock(), 80, 20, 20, 5, '#');
-    InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
-    InitObject(AddNewBlock(), 150, 20, 40, 5, '#');
-    InitObject(AddNewBlock(), 210, 15, 10, 10, '+');
-    movingCount = 0;  
-    InitObject(AddNewMoving(), 25, 10, 3, 2, 'o');
-    InitObject(AddNewMoving(), 80, 10, 3, 2, 'o');
-    InitObject(AddNewMoving(), 65, 10, 3, 2, 'o');
-    InitObject(AddNewMoving(), 120, 10, 3, 2, 'o');
-    InitObject(AddNewMoving(), 160, 10, 3, 2, 'o');
-    InitObject(AddNewMoving(), 175, 10, 3, 2, 'o');
-    
+    block = (TObject*)realloc(block, blockCount * sizeof(TObject));
+    movingCount = 0;
+    moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
+
+    InitObject(&mario, 39, 10, 3, 3, '@');
+
+    if (lvl == 1) {
+        InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
+            InitObject(AddNewBlock(), 30, 10, 5, 3, '?');
+            InitObject(AddNewBlock(), 50, 10, 5, 3, '?');
+        InitObject(AddNewBlock(), 60, 15, 40, 10, '#');
+        InitObject(AddNewBlock(), 100, 20, 20, 5, '#');
+        InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
+        InitObject(AddNewBlock(), 150, 20, 40, 5, '#');
+        InitObject(AddNewBlock(), 210, 15, 10, 10, '+');
     }
 
     if (lvl == 2) {
-    InitObject(&mario, 39, 10, 3, 3, '@');
+        InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
+        InitObject(AddNewBlock(), 60, 15, 10, 10, '#');
+        InitObject(AddNewBlock(), 80, 20, 20, 5, '#');
+        InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
+        InitObject(AddNewBlock(), 150, 20, 40, 5, '#');
+        InitObject(AddNewBlock(), 210, 15, 10, 10, '+');
+        movingCount = 0;  
+        InitObject(AddNewMoving(), 25, 10, 3, 2, 'o');
+        InitObject(AddNewMoving(), 80, 10, 3, 2, 'o');
+        InitObject(AddNewMoving(), 65, 10, 3, 2, 'o');
+        InitObject(AddNewMoving(), 120, 10, 3, 2, 'o');
+        InitObject(AddNewMoving(), 160, 10, 3, 2, 'o');
+        InitObject(AddNewMoving(), 175, 10, 3, 2, 'o');
+    
+    }
 
-    blockCount = 0;
-    InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
-    InitObject(AddNewBlock(), 80, 20, 15, 5, '#');
-    InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
-    InitObject(AddNewBlock(), 160, 10, 15, 15, '#');
-    InitObject(AddNewBlock(), 200, 20, 20, 5, '#');
-    InitObject(AddNewBlock(), 240, 15, 10, 10, '+');
-    movingCount = 0;
-    InitObject(AddNewMoving(), 25, 10, 3, 2, 'o');
-    InitObject(AddNewMoving(), 85, 10, 3, 2, 'o');
-    InitObject(AddNewMoving(), 130, 10, 3, 2, 'o');
-    InitObject(AddNewMoving(), 165, 5, 3, 2, 'o');
-    InitObject(AddNewMoving(), 180, 5, 3, 2, 'o');
-    InitObject(AddNewMoving(), 195, 5, 3, 2, 'o');
-    InitObject(AddNewMoving(), 210, 5, 3, 2, '+');
+    if (lvl == 3) {
+        InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
+        InitObject(AddNewBlock(), 80, 20, 15, 5, '#');
+        InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
+        InitObject(AddNewBlock(), 160, 10, 15, 15, '#');
+        InitObject(AddNewBlock(), 200, 20, 20, 5, '#');
+        InitObject(AddNewBlock(), 240, 15, 10, 10, '+');
+        movingCount = 0;
+        InitObject(AddNewMoving(), 25, 10, 3, 2, 'o');
+        InitObject(AddNewMoving(), 85, 10, 3, 2, 'o');
+        InitObject(AddNewMoving(), 130, 10, 3, 2, 'o');
+        InitObject(AddNewMoving(), 165, 5, 3, 2, 'o');
+        InitObject(AddNewMoving(), 180, 5, 3, 2, 'o');
+        InitObject(AddNewMoving(), 195, 5, 3, 2, 'o');
+        InitObject(AddNewMoving(), 210, 5, 3, 2, '+');
 
     }
 }
