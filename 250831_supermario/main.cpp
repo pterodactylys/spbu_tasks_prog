@@ -87,6 +87,28 @@ void VerticalMove(TObject* obj) {
     }       
 }
 
+void DeleteMoving(int i) {
+    movingCount--;
+    moving[i] = moving[movingCount];
+    moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
+}
+
+void MarioCollision() {
+    for (int i = 0; i < movingCount; i++) {
+        if (IsCollide(mario, moving[i])) {
+            if (mario.IsFLy && (mario.vy > 0) && 
+        mario.y + mario.h < moving[i].y + moving[i].h / 2) {
+                DeleteMoving(i);
+                i--;
+                continue;
+            }
+            else {
+                CreateLevel(level);
+            }
+        }
+    }
+}
+
 void HorizontalMove(TObject* obj) {
     obj[0].x += obj[0].vx;
     for (int i = 0; i < blockCount; i++) {
@@ -95,6 +117,12 @@ void HorizontalMove(TObject* obj) {
             obj[0].vx = -obj[0].vx;
             return;
         }
+    }
+    TObject temp = *obj;
+    VerticalMove(&temp);
+    if (temp.IsFLy) {
+        obj[0].x -= obj[0].vx;
+        obj[0].vx = -obj[0].vx;
     }
 }
 
@@ -203,12 +231,19 @@ int main() {
     }
 
     VerticalMove(&mario);
+    MarioCollision();
+
     for (int i = 0; i < blockCount; i++) {
         PlaceObject(block[i]);
     }
     for (int i = 0; i < movingCount; i++) {
         VerticalMove(moving + i);
         HorizontalMove(moving + i);
+        if (moving[i].y < 0) {
+            DeleteMoving(i);
+            i--;
+            continue;
+        }
         PlaceObject(moving[i]);
     }    
 
