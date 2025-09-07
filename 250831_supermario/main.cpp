@@ -39,140 +39,77 @@ int level = 1;
 int score;
 int maxlvl;
 
-void ClearMap() {
-    for (int i = 0; i < mapWidth; i++) {
-        map[0][i] = ' ';
-    }
-    map[0][mapWidth] = '\0';
-    for (int j = 0; j < mapHeight; j++) {
-        sprintf(map[j], map[0]);
-    }
-}
-
-void PrintMap() {
-    map[mapHeight - 1][mapWidth - 1] = '\0';
-    for (int j = 0; j < mapHeight; j++) {
-        printf("%s", map[j]);
-    }
-}
-
-void SetObjectPos(TObject* obj, float xPos, float yPos) {
-    (*obj).x = xPos;
-    (*obj).y = yPos;
-}
-
-void InitObject(TObject* obj, float xPos, float yPos, float width,
-                float height, char ctype) {
-    SetObjectPos(obj, xPos, yPos);
-    (*obj).w = width;
-    (*obj).h = height;
-    (*obj).vy = 0;
-    (*obj).type = ctype;
-    (*obj).IsFLy = false;
-    (*obj).vx = DEFAULT_VELOCITY;
-}
-
-void CreateLevel(int lvl);
-
-void PlayerDeath() {
-    system("color 4F");
-    Sleep(500);
-    CreateLevel(level);
-}
-
-bool IsCollide(TObject obj1, TObject obj2);
+TObject *AddNewBlock();
 TObject *AddNewMoving();
+void ClearMap();
+void CreateLevel(int lvl);
+void DeleteMoving(int i);
+void HorizontalMapMove(float dx);
+void HorizontalMove(TObject* obj);
+void InitObject(TObject* obj, float xPos, float yPos, float width,
+                float height, char ctype);
+bool IsCollide(TObject obj1, TObject obj2);
+bool IsOnMap(TObject obj);
+void MarioCollision();
+void PlaceObject(TObject obj);
+void PlayerDeath();
+void PrintMap();
+void setCursorPosition(int x, int y);
+void SetObjectPos(TObject* obj, float xPos, float yPos);
+void ShowScore();
+void VerticalMove(TObject* obj);
 
-void VerticalMove(TObject* obj) {
-    (*obj).vy += GRAVITY;
-    (*obj).IsFLy = true;
-    SetObjectPos(obj, (*obj).x, (*obj).y + (*obj).vy);
+
+int main() {
+    CreateLevel(level);
+
+    do {
+    ClearMap();
+
+    if ((GetKeyState(VK_SPACE) < 0) && (!mario.IsFLy)) {
+        mario.vy = JUMP_VELOCITY;
+    }
+
+    if (GetKeyState(VK_LEFT) < 0) {
+        HorizontalMapMove(PLAYER_VELOCITY);
+    }
+    if (GetKeyState(VK_RIGHT) < 0) {
+        HorizontalMapMove(-PLAYER_VELOCITY);
+    }
+    
+    if (mario.y > mapHeight) {
+        PlayerDeath();
+    }
+
+    VerticalMove(&mario);
+    MarioCollision();
 
     for (int i = 0; i < blockCount; i++) {
-        if (IsCollide(*obj, block[i])) {
-            if (obj[0].vy > 0) {
-                obj[0].IsFLy = false;
-            }
-            if ((block[i].type == '?') && (obj[0].vy < 0) && (obj == &mario)) {
-                block[i].type = '-';
-                InitObject(AddNewMoving(), block[i].x, block[i].y - 3, 3, 2, '$');
-                moving[movingCount - 1].vy = -0.7;
-            }
-            (*obj).y -= ((*obj).vy);
-            (*obj).vy = 0;
-            if (block[i].type == '+') {
-                level++;
-                if (level > maxlvl) level = 1;
-
-                system("color 2F");
-                Sleep(500);
-                CreateLevel(level);
-            }
-            break;
-        }
-    }       
-}
-
-void DeleteMoving(int i) {
-    movingCount--;
-    moving[i] = moving[movingCount];
-    moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
-}
-
-void MarioCollision() {
+        PlaceObject(block[i]);
+    }
     for (int i = 0; i < movingCount; i++) {
-        if (IsCollide(mario, moving[i])) {
-            if (moving[i].type == 'o') {
-                if (mario.IsFLy && (mario.vy > 0) && 
-            mario.y + mario.h < moving[i].y + moving[i].h / 2) {
-                    score += MONSTER_REWARD;
-                    DeleteMoving(i);
-                    i--;
-                    continue;
-                }
-                else {
-                    PlayerDeath();
-                }
-            }
-            if (moving[i].type == '$') {
-                score += COIN_REWARD;
-                DeleteMoving(i);
-                i--;
-                continue;
-            }
+        VerticalMove(moving + i);
+        HorizontalMove(moving + i);
+        if (moving[i].y < -10) {
+            DeleteMoving(i);
+            i--;
+            continue;
         }
+        PlaceObject(moving[i]);
+    }    
+
+    PlaceObject(mario);
+    ShowScore();
+    setCursorPosition(0, 0);
+    PrintMap();
+
+    Sleep(10);
     }
+    while (GetKeyState(VK_ESCAPE) >= 0);
+
+    return 0;
 }
 
-
-void HorizontalMove(TObject* obj) {
-    obj[0].x += obj[0].vx;
-    for (int i = 0; i < blockCount; i++) {
-        if (IsCollide(*obj, block[i])) {
-            obj[0].x -= obj[0].vx;
-            obj[0].vx = -obj[0].vx;
-            return;
-        }
-    }
-    if (obj[0].type == 'o') {
-        TObject temp = *obj;
-        VerticalMove(&temp);
-        if (temp.IsFLy) {
-            obj[0].x -= obj[0].vx;
-            obj[0].vx = -obj[0].vx;
-        }
-    }
-}
-
-bool IsOnMap(TObject obj) {
-    return ((obj.y + obj.h) < mapHeight) && (obj.y >= 0) && ((obj.x + obj.w) < mapWidth) &&
-           (obj.x >= 0);
-}
-
-bool IsCollide(TObject obj1, TObject obj2) {
-    return (obj1.x < (obj2.x + obj2.w)) && ((obj1.x + obj1.w) > obj2.x) &&
-           (obj1.y < (obj2.y + obj2.h)) && ((obj1.y + obj1.h) > obj2.y);
-}
 
 TObject *AddNewBlock() {
     blockCount++;
@@ -186,18 +123,13 @@ TObject *AddNewMoving() {
     return moving + (movingCount - 1);
 }
 
-void ShowScore() {
-    char c[30];
-    char s[10];
-    sprintf(c, "Score: %d", score);
-    sprintf(s, "Lvl: %d", level);
-    int len_c = strlen(c);
-    int len_s = strlen(s);
-    for (int i = 0; i < len_c; i++) {
-        map[1][i + 5] = c[i];
+void ClearMap() {
+    for (int i = 0; i < mapWidth; i++) {
+        map[0][i] = ' ';
     }
-    for (int i = 0; i < len_s; i++) {
-        map[1][mapWidth - len_s - 5 + i] = s[i];
+    map[0][mapWidth] = '\0';
+    for (int j = 0; j < mapHeight; j++) {
+        sprintf(map[j], map[0]);
     }
 }
 
@@ -269,26 +201,10 @@ void CreateLevel(int lvl) {
     maxlvl = 3;
 }
 
-void PlaceObject(TObject obj) {
-    int ix = (int)round(obj.x);
-    int iy = (int)round(obj.y);
-    int iw = (int)round(obj.w);
-    int ih = (int)round(obj.h);
-
-    for (int i = ix; i < (ix + iw); i++) {
-        for (int j = iy; j < (iy + ih); j++) {
-            if (IsOnMap(obj)) {
-            map[j][i] = obj.type;
-            }
-        }
-    }
-}
-
-void setCursorPosition(int x, int y) {
-    COORD coord;
-    coord.X = x;
-    coord.Y = y;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+void DeleteMoving(int i) {
+    movingCount--;
+    moving[i] = moving[movingCount];
+    moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
 }
 
 void HorizontalMapMove(float dx) {
@@ -308,52 +224,152 @@ void HorizontalMapMove(float dx) {
     }
 }
 
-int main() {
+void HorizontalMove(TObject* obj) {
+    obj[0].x += obj[0].vx;
+    for (int i = 0; i < blockCount; i++) {
+        if (IsCollide(*obj, block[i])) {
+            obj[0].x -= obj[0].vx;
+            obj[0].vx = -obj[0].vx;
+            return;
+        }
+    }
+    if (obj[0].type == 'o') {
+        TObject temp = *obj;
+        VerticalMove(&temp);
+        if (temp.IsFLy) {
+            obj[0].x -= obj[0].vx;
+            obj[0].vx = -obj[0].vx;
+        }
+    }
+}
+
+void InitObject(TObject* obj, float xPos, float yPos, float width,
+                float height, char ctype) {
+    SetObjectPos(obj, xPos, yPos);
+    (*obj).w = width;
+    (*obj).h = height;
+    (*obj).vy = 0;
+    (*obj).type = ctype;
+    (*obj).IsFLy = false;
+    (*obj).vx = DEFAULT_VELOCITY;
+}
+
+bool IsCollide(TObject obj1, TObject obj2) {
+    return (obj1.x < (obj2.x + obj2.w)) && ((obj1.x + obj1.w) > obj2.x) &&
+           (obj1.y < (obj2.y + obj2.h)) && ((obj1.y + obj1.h) > obj2.y);
+}
+
+bool IsOnMap(TObject obj) {
+    return ((obj.y + obj.h) < mapHeight) && (obj.y >= 0) && ((obj.x + obj.w) < mapWidth) &&
+           (obj.x >= 0);
+}
+
+void MarioCollision() {
+    for (int i = 0; i < movingCount; i++) {
+        if (IsCollide(mario, moving[i])) {
+            if (moving[i].type == 'o') {
+                if (mario.IsFLy && (mario.vy > 0) && 
+            mario.y + mario.h < moving[i].y + moving[i].h / 2) {
+                    score += MONSTER_REWARD;
+                    DeleteMoving(i);
+                    i--;
+                    continue;
+                }
+                else {
+                    PlayerDeath();
+                }
+            }
+            if (moving[i].type == '$') {
+                score += COIN_REWARD;
+                DeleteMoving(i);
+                i--;
+                continue;
+            }
+        }
+    }
+}
+
+void PlaceObject(TObject obj) {
+    int ix = (int)round(obj.x);
+    int iy = (int)round(obj.y);
+    int iw = (int)round(obj.w);
+    int ih = (int)round(obj.h);
+
+    for (int i = ix; i < (ix + iw); i++) {
+        for (int j = iy; j < (iy + ih); j++) {
+            if (IsOnMap(obj)) {
+            map[j][i] = obj.type;
+            }
+        }
+    }
+}
+
+void PlayerDeath() {
+    system("color 4F");
+    Sleep(500);
     CreateLevel(level);
+}
 
-    do {
-    ClearMap();
+void PrintMap() {
+    map[mapHeight - 1][mapWidth - 1] = '\0';
+    for (int j = 0; j < mapHeight; j++) {
+        printf("%s", map[j]);
+    }
+}
 
-    if ((GetKeyState(VK_SPACE) < 0) && (!mario.IsFLy)) {
-        mario.vy = JUMP_VELOCITY;
-    }
+void setCursorPosition(int x, int y) {
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
 
-    if (GetKeyState(VK_LEFT) < 0) {
-        HorizontalMapMove(PLAYER_VELOCITY);
-    }
-    if (GetKeyState(VK_RIGHT) < 0) {
-        HorizontalMapMove(-PLAYER_VELOCITY);
-    }
-    
-    if (mario.y > mapHeight) {
-        PlayerDeath();
-    }
+void SetObjectPos(TObject* obj, float xPos, float yPos) {
+    (*obj).x = xPos;
+    (*obj).y = yPos;
+}
 
-    VerticalMove(&mario);
-    MarioCollision();
+void ShowScore() {
+    char c[30];
+    char s[10];
+    sprintf(c, "Score: %d", score);
+    sprintf(s, "Lvl: %d", level);
+    int len_c = strlen(c);
+    int len_s = strlen(s);
+    for (int i = 0; i < len_c; i++) {
+        map[1][i + 5] = c[i];
+    }
+    for (int i = 0; i < len_s; i++) {
+        map[1][mapWidth - len_s - 5 + i] = s[i];
+    }
+}
+
+void VerticalMove(TObject* obj) {
+    (*obj).vy += GRAVITY;
+    (*obj).IsFLy = true;
+    SetObjectPos(obj, (*obj).x, (*obj).y + (*obj).vy);
 
     for (int i = 0; i < blockCount; i++) {
-        PlaceObject(block[i]);
-    }
-    for (int i = 0; i < movingCount; i++) {
-        VerticalMove(moving + i);
-        HorizontalMove(moving + i);
-        if (moving[i].y < -10) {
-            DeleteMoving(i);
-            i--;
-            continue;
+        if (IsCollide(*obj, block[i])) {
+            if (obj[0].vy > 0) {
+                obj[0].IsFLy = false;
+            }
+            if ((block[i].type == '?') && (obj[0].vy < 0) && (obj == &mario)) {
+                block[i].type = '-';
+                InitObject(AddNewMoving(), block[i].x, block[i].y - 3, 3, 2, '$');
+                moving[movingCount - 1].vy = -0.7;
+            }
+            (*obj).y -= ((*obj).vy);
+            (*obj).vy = 0;
+            if (block[i].type == '+') {
+                level++;
+                if (level > maxlvl) level = 1;
+
+                system("color 2F");
+                Sleep(500);
+                CreateLevel(level);
+            }
+            break;
         }
-        PlaceObject(moving[i]);
-    }    
-
-    PlaceObject(mario);
-    ShowScore();
-    setCursorPosition(0, 0);
-    PrintMap();
-
-    Sleep(10);
-    }
-    while (GetKeyState(VK_ESCAPE) >= 0);
-
-    return 0;
+    }       
 }
