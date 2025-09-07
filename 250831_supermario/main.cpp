@@ -136,36 +136,58 @@ bool IsCollide(TObject obj1, TObject obj2) {
              (obj1.y + obj1.h <= obj2.y) || (obj1.y >= obj2.y + obj2.h));
 }
 
+TObject *AddNewBlock() {
+    blockCount++;
+    block = (TObject*)realloc(block, blockCount * sizeof(TObject));
+    return block + (blockCount - 1);
+}
+
+TObject *AddNewMoving() {
+    movingCount++;
+    moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
+    return moving + (movingCount - 1);
+}
+
 void CreateLevel(int lvl) {
     if (lvl == 1) {
     InitObject(&mario, 39, 10, 3, 3, '@');
     
-    blockCount = 6;
-    block = (TObject*)realloc(block, blockCount * sizeof(TObject));
-    InitObject(block+0, 20, 20, 40, 5, '#');
-    InitObject(block+1, 60, 15, 10, 10, '#');
-    InitObject(block+2, 80, 20, 20, 5, '#');
-    InitObject(block+3, 120, 15, 10, 10, '#');
-    InitObject(block+4, 150, 20, 40, 5, '#');
-    InitObject(block+5, 210, 15, 10, 10, '+');
-    movingCount = 1;  
-    moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
-    InitObject(moving+0, 25, 10, 3, 2, 'o');
+    blockCount = 0;
+    InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
+    InitObject(AddNewBlock(), 60, 15, 10, 10, '#');
+    InitObject(AddNewBlock(), 80, 20, 20, 5, '#');
+    InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
+    InitObject(AddNewBlock(), 150, 20, 40, 5, '#');
+    InitObject(AddNewBlock(), 210, 15, 10, 10, '+');
+    movingCount = 0;  
+    InitObject(AddNewMoving(), 25, 10, 3, 2, 'o');
+    InitObject(AddNewMoving(), 80, 10, 3, 2, 'o');
+    InitObject(AddNewMoving(), 65, 10, 3, 2, 'o');
+    InitObject(AddNewMoving(), 120, 10, 3, 2, 'o');
+    InitObject(AddNewMoving(), 160, 10, 3, 2, 'o');
+    InitObject(AddNewMoving(), 175, 10, 3, 2, 'o');
+    
     }
 
     if (lvl == 2) {
     InitObject(&mario, 39, 10, 3, 3, '@');
 
-    blockCount = 8;
-    block = (TObject*)realloc(block, blockCount * sizeof(TObject));
-    InitObject(block+0, 20, 20, 40, 5, '#');
-    InitObject(block+1, 60, 15, 10, 10, '#');
-    InitObject(block+2, 80, 20, 20, 5, '#');
-    InitObject(block+3, 120, 15, 10, 10, '#');
-    InitObject(block+4, 150, 20, 40, 5, '#');
-    InitObject(block+5, 210, 15, 10, 10, '#');
-    InitObject(block+6, 240, 10, 10, 10, '#');
-    InitObject(block+7, 270, 5, 10, 10, '+');
+    blockCount = 0;
+    InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
+    InitObject(AddNewBlock(), 80, 20, 15, 5, '#');
+    InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
+    InitObject(AddNewBlock(), 160, 10, 15, 15, '#');
+    InitObject(AddNewBlock(), 200, 20, 20, 5, '#');
+    InitObject(AddNewBlock(), 240, 15, 10, 10, '+');
+    movingCount = 0;
+    InitObject(AddNewMoving(), 25, 10, 3, 2, 'o');
+    InitObject(AddNewMoving(), 85, 10, 3, 2, 'o');
+    InitObject(AddNewMoving(), 130, 10, 3, 2, 'o');
+    InitObject(AddNewMoving(), 165, 5, 3, 2, 'o');
+    InitObject(AddNewMoving(), 180, 5, 3, 2, 'o');
+    InitObject(AddNewMoving(), 195, 5, 3, 2, 'o');
+    InitObject(AddNewMoving(), 210, 5, 3, 2, '+');
+
     }
 }
 
@@ -216,7 +238,7 @@ int main() {
     ClearMap();
 
     if ((GetKeyState(VK_SPACE) < 0) && (!mario.IsFLy)) {
-        mario.vy = -0.8;
+        mario.vy = -1.2;
     }
 
     if (GetKeyState(VK_LEFT) < 0) {
