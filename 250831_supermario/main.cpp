@@ -1,8 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <iostream>
 
-#include <math.h>
+#include <cmath>
 #include <windows.h>
 
 #define mapWidth 120
