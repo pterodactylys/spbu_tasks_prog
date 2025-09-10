@@ -28,10 +28,10 @@ typedef struct SObject {
 
 char map[mapHeight][mapWidth + 1];
 TObject mario;
-TObject *block = NULL;
+TObject *block = nullptr;
 int blockCount;
 
-TObject *moving = NULL;
+TObject *moving = nullptr;
 int movingCount;
 
 int level = 1;
@@ -108,19 +108,33 @@ int main() {
     }
     while (GetKeyState(VK_ESCAPE) >= 0);
     ShowCursor();
+    
+    delete[] block;
+    delete[] moving;
+
     return 0;
 }
 
 
 TObject *AddNewBlock() {
+    TObject* newBlock = new TObject[blockCount + 1];
+    for (int i = 0; i < blockCount; i++) {
+        newBlock[i] = block[i];
+    }
+    delete[] block;
+    block = newBlock;
     blockCount++;
-    block = (TObject*)realloc(block, blockCount * sizeof(TObject));
     return block + (blockCount - 1);
 }
 
 TObject *AddNewMoving() {
+    TObject* newMoving = new TObject[movingCount + 1];
+    for (int i = 0; i < movingCount; i++) {
+        newMoving[i] = moving[i];
+    }
+    delete[] moving;
+    moving = newMoving;
     movingCount++;
-    moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
     return moving + (movingCount - 1);
 }
 
@@ -138,10 +152,13 @@ void CreateLevel(int lvl) {
 
     system("color 0B");
 
+    delete[] block;
+    delete[] moving;
+
     blockCount = 0;
-    block = (TObject*)realloc(block, blockCount * sizeof(TObject));
+    block = nullptr;
     movingCount = 0;
-    moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
+    moving = nullptr;
 
     InitObject(&mario, 39, 10, PLAYER_WIDTH, PLAYER_HEIGHT, '@');
     score = 0;
@@ -204,7 +221,18 @@ void CreateLevel(int lvl) {
 void DeleteMoving(int i) {
     movingCount--;
     moving[i] = moving[movingCount];
-    moving = (TObject*)realloc(moving, movingCount * sizeof(TObject));
+    if (movingCount == 0) {
+        delete[] moving;
+        moving = nullptr;
+        return;
+    } else {
+        TObject* newMoving = new TObject[movingCount];
+        for (int j = 0; j < movingCount; j++) {
+            newMoving[j] = moving[j];
+        }
+        delete[] moving;
+        moving = newMoving;
+    }
 }
 
 void HideCursor() {
