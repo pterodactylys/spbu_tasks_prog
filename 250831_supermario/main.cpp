@@ -1,22 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 
 #include <math.h>
 #include <windows.h>
 
 #define mapWidth 120
 #define mapHeight 30
+#define MAXLVL 3
 
 #define GRAVITY 0.05
+#define DEFAULT_VELOCITY 0.2
 #define JUMP_VELOCITY -1.0
 #define PLAYER_VELOCITY 1
 #define PLAYER_WIDTH 3
 #define PLAYER_HEIGHT 3
 
-#define MONSTER_REWARD 50
 #define COIN_REWARD 100
+#define MONSTER_REWARD 50
 
-#define DEFAULT_VELOCITY 0.2
 
 typedef struct SObject {
     float x, y;
@@ -37,7 +39,6 @@ int movingCount;
 
 int level = 1;
 int score;
-int maxlvl;
 
 TObject *AddNewBlock();
 TObject *AddNewMoving();
@@ -201,7 +202,6 @@ void CreateLevel(int lvl) {
         InitObject(AddNewMoving(), 210, 5, 3, 2, '+');
 
     }
-    maxlvl = 3;
 }
 
 void DeleteMoving(int i) {
@@ -321,7 +321,7 @@ void PlayerDeath() {
 void PrintMap() {
     map[mapHeight - 1][mapWidth - 1] = '\0';
     for (int j = 0; j < mapHeight; j++) {
-        printf("%s", map[j]);
+        std::cout << map[j];
     }
 }
 
@@ -376,7 +376,7 @@ void VerticalMove(TObject* obj) {
             (*obj).vy = 0;
             if (block[i].type == '+') {
                 level++;
-                if (level > maxlvl) level = 1;
+                if (level > MAXLVL) level = 1;
 
                 system("color 2F");
                 Sleep(500);
@@ -386,3 +386,4 @@ void VerticalMove(TObject* obj) {
         }
     }       
 }
+
