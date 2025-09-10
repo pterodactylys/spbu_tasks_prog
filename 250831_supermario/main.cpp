@@ -74,10 +74,10 @@ int main() {
         mario.vy = JUMP_VELOCITY;
     }
 
-    if (GetKeyState(VK_LEFT) < 0) {
+    if ((GetKeyState(VK_LEFT) < 0) || (GetKeyState('A') < 0)) {
         HorizontalMapMove(PLAYER_VELOCITY);
     }
-    if (GetKeyState(VK_RIGHT) < 0) {
+    if ((GetKeyState(VK_RIGHT) < 0) || (GetKeyState('D') < 0)) {
         HorizontalMapMove(-PLAYER_VELOCITY);
     }
     
