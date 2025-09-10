@@ -166,7 +166,7 @@ void CreateLevel(int lvl) {
         InitObject(AddNewMoving(), 80, 10, 3, 2, 'o');
     }
 
-    if (lvl == 2) {
+    else if (lvl == 2) {
         InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
         InitObject(AddNewBlock(), 60, 15, 10, 10, '#');
         InitObject(AddNewBlock(), 80, 20, 20, 5, '#');
@@ -183,7 +183,7 @@ void CreateLevel(int lvl) {
     
     }
 
-    if (lvl == 3) {
+    else if (lvl == 3) {
         InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
         InitObject(AddNewBlock(), 80, 20, 15, 5, '#');
         InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
