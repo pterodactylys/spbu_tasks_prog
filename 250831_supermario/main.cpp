@@ -39,8 +39,8 @@ int movingCount;
 int level = 1;
 int score;
 
-TObject *AddNewBlock();
-TObject *AddNewMoving();
+TObject *add_new_block(TObject*& block, int& blockCount);
+TObject *add_new_moving(TObject*& moving, int& movingCount);
 void clear_map();
 void create_level(int lvl);
 void delete_moving(int i);
@@ -118,7 +118,7 @@ int main() {
 }
 
 
-TObject *AddNewBlock() {
+TObject *add_new_block(TObject*& block, int& blockCount) {
     TObject* newBlock = new TObject[blockCount + 1];
     for (int i = 0; i < blockCount; i++) {
         newBlock[i] = block[i];
@@ -129,7 +129,7 @@ TObject *AddNewBlock() {
     return block + (blockCount - 1);
 }
 
-TObject *AddNewMoving() {
+TObject *add_new_moving(TObject*& moving, int& movingCount) {
     TObject* newMoving = new TObject[movingCount + 1];
     for (int i = 0; i < movingCount; i++) {
         newMoving[i] = moving[i];
@@ -166,56 +166,56 @@ void create_level(int lvl) {
     score = 0;
 
     if (lvl == 1) {
-        init_object(AddNewBlock(), 20, 20, 40, 5, '#');
-            init_object(AddNewBlock(), 30, 10, 5, 3, '?');
-            init_object(AddNewBlock(), 50, 10, 5, 3, '?');
-        init_object(AddNewBlock(), 60, 15, 40, 10, '#');
-            init_object(AddNewBlock(), 60, 5, 10, 3, '-');
-            init_object(AddNewBlock(), 70, 5, 5, 3, '?');
-            init_object(AddNewBlock(), 75, 5, 5, 3, '-');
-            init_object(AddNewBlock(), 80, 5, 5, 3, '?');
-            init_object(AddNewBlock(), 85, 5, 10, 3, '-');
-        init_object(AddNewBlock(), 100, 20, 20, 5, '#');
-        init_object(AddNewBlock(), 120, 15, 10, 10, '#');
-        init_object(AddNewBlock(), 150, 20, 40, 5, '#');
-        init_object(AddNewBlock(), 210, 15, 10, 10, '+');
+        init_object(add_new_block(block, blockCount), 20, 20, 40, 5, '#');
+            init_object(add_new_block(block, blockCount), 30, 10, 5, 3, '?');
+            init_object(add_new_block(block, blockCount), 50, 10, 5, 3, '?');
+        init_object(add_new_block(block, blockCount), 60, 15, 40, 10, '#');
+            init_object(add_new_block(block, blockCount), 60, 5, 10, 3, '-');
+            init_object(add_new_block(block, blockCount), 70, 5, 5, 3, '?');
+            init_object(add_new_block(block, blockCount), 75, 5, 5, 3, '-');
+            init_object(add_new_block(block, blockCount), 80, 5, 5, 3, '?');
+            init_object(add_new_block(block, blockCount), 85, 5, 10, 3, '-');
+        init_object(add_new_block(block, blockCount), 100, 20, 20, 5, '#');
+        init_object(add_new_block(block, blockCount), 120, 15, 10, 10, '#');
+        init_object(add_new_block(block, blockCount), 150, 20, 40, 5, '#');
+        init_object(add_new_block(block, blockCount), 210, 15, 10, 10, '+');
 
-        init_object(AddNewMoving(), 25, 10, 3, 2, 'o');
-        init_object(AddNewMoving(), 80, 10, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 25, 10, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 80, 10, 3, 2, 'o');
     }
 
     else if (lvl == 2) {
-        init_object(AddNewBlock(), 20, 20, 40, 5, '#');
-        init_object(AddNewBlock(), 60, 15, 10, 10, '#');
-        init_object(AddNewBlock(), 80, 20, 20, 5, '#');
-        init_object(AddNewBlock(), 120, 15, 10, 10, '#');
-        init_object(AddNewBlock(), 150, 20, 40, 5, '#');
-        init_object(AddNewBlock(), 210, 15, 10, 10, '+');
+        init_object(add_new_block(block, blockCount), 20, 20, 40, 5, '#');
+        init_object(add_new_block(block, blockCount), 60, 15, 10, 10, '#');
+        init_object(add_new_block(block, blockCount), 80, 20, 20, 5, '#');
+        init_object(add_new_block(block, blockCount), 120, 15, 10, 10, '#');
+        init_object(add_new_block(block, blockCount), 150, 20, 40, 5, '#');
+        init_object(add_new_block(block, blockCount), 210, 15, 10, 10, '+');
         movingCount = 0;  
-        init_object(AddNewMoving(), 25, 10, 3, 2, 'o');
-        init_object(AddNewMoving(), 80, 10, 3, 2, 'o');
-        init_object(AddNewMoving(), 65, 10, 3, 2, 'o');
-        init_object(AddNewMoving(), 120, 10, 3, 2, 'o');
-        init_object(AddNewMoving(), 160, 10, 3, 2, 'o');
-        init_object(AddNewMoving(), 175, 10, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 25, 10, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 80, 10, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 65, 10, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 120, 10, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 160, 10, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 175, 10, 3, 2, 'o');
     
     }
 
     else if (lvl == 3) {
-        init_object(AddNewBlock(), 20, 20, 40, 5, '#');
-        init_object(AddNewBlock(), 80, 20, 15, 5, '#');
-        init_object(AddNewBlock(), 120, 15, 10, 10, '#');
-        init_object(AddNewBlock(), 160, 10, 15, 15, '#');
-        init_object(AddNewBlock(), 200, 20, 20, 5, '#');
-        init_object(AddNewBlock(), 240, 15, 10, 10, '+');
+        init_object(add_new_block(block, blockCount), 20, 20, 40, 5, '#');
+        init_object(add_new_block(block, blockCount), 80, 20, 15, 5, '#');
+        init_object(add_new_block(block, blockCount), 120, 15, 10, 10, '#');
+        init_object(add_new_block(block, blockCount), 160, 10, 15, 15, '#');
+        init_object(add_new_block(block, blockCount), 200, 20, 20, 5, '#');
+        init_object(add_new_block(block, blockCount), 240, 15, 10, 10, '+');
         movingCount = 0;
-        init_object(AddNewMoving(), 25, 10, 3, 2, 'o');
-        init_object(AddNewMoving(), 85, 10, 3, 2, 'o');
-        init_object(AddNewMoving(), 130, 10, 3, 2, 'o');
-        init_object(AddNewMoving(), 165, 5, 3, 2, 'o');
-        init_object(AddNewMoving(), 180, 5, 3, 2, 'o');
-        init_object(AddNewMoving(), 195, 5, 3, 2, 'o');
-        init_object(AddNewMoving(), 210, 5, 3, 2, '+');
+        init_object(add_new_moving(moving, movingCount), 25, 10, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 85, 10, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 130, 10, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 165, 5, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 180, 5, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 195, 5, 3, 2, 'o');
+        init_object(add_new_moving(moving, movingCount), 210, 5, 3, 2, '+');
 
     }
 }
@@ -396,7 +396,7 @@ void move_object_vertically(TObject* obj) {
             }
             if ((block[i].type == '?') && (obj[0].vy < 0) && (obj == &mario)) {
                 block[i].type = '-';
-                init_object(AddNewMoving(), block[i].x, block[i].y - 3, 3, 2, '$');
+                init_object(add_new_moving(moving, movingCount), block[i].x, block[i].y - 3, 3, 2, '$');
                 moving[movingCount - 1].vy = -0.7;
             }
             obj -> y -= obj -> vy;
