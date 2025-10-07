@@ -2,19 +2,6 @@
 #include <iostream>
 #include <windows.h>
 
-// #define mapWidth 120
-// #define mapHeight 30
-// #define MAXLVL 3
-
-// #define GRAVITY 0.05
-// #define DEFAULT_VELOCITY 0.2
-// #define JUMP_VELOCITY -1.0
-// #define PLAYER_VELOCITY 1
-// #define PLAYER_WIDTH 3
-// #define PLAYER_HEIGHT 3
-
-// #define COIN_REWARD 100
-// #define MONSTER_REWARD 50
 
 const int mapWidth = 120;
 const int mapHeight = 30;
@@ -373,8 +360,8 @@ void set_cursor_position(int x, int y) {
 }
 
 void set_object_pos(TObject* obj, float xPos, float yPos) {
-    (*obj).x = xPos;
-    (*obj).y = yPos;
+    obj -> x = xPos;
+    obj -> y = yPos;
 }
 
 void show_cursor() {
@@ -398,9 +385,9 @@ void ShowScore() {
 }
 
 void move_object_vertically(TObject* obj) {
-    (*obj).vy += GRAVITY;
-    (*obj).IsFLy = true;
-    set_object_pos(obj, (*obj).x, (*obj).y + (*obj).vy);
+    obj -> vy += GRAVITY;
+    obj -> IsFLy = true;
+    set_object_pos(obj, obj -> x, obj -> y + obj -> vy);
 
     for (int i = 0; i < blockCount; i++) {
         if (is_collide(*obj, block[i])) {
@@ -412,8 +399,8 @@ void move_object_vertically(TObject* obj) {
                 init_object(AddNewMoving(), block[i].x, block[i].y - 3, 3, 2, '$');
                 moving[movingCount - 1].vy = -0.7;
             }
-            (*obj).y -= ((*obj).vy);
-            (*obj).vy = 0;
+            obj -> y -= obj -> vy;
+            obj -> vy = 0;
             if (block[i].type == '+') {
                 level++;
                 if (level > MAXLVL) level = 1;
