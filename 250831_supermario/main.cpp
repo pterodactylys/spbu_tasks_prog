@@ -266,20 +266,20 @@ void move_map_horizontally(float dx, int blockCount, int movingCount) {
 }
 
 void move_objects_horizontally(TObject* obj, TObject* block, int blockCount, float gravity) {
-    obj[0].x += obj[0].vx;
+    obj -> x += obj -> vx;
     for (int i = 0; i < blockCount; i++) {
         if (is_collide(*obj, block[i])) {
-            obj[0].x -= obj[0].vx;
-            obj[0].vx = -obj[0].vx;
+            obj -> x -= obj -> vx;
+            obj -> vx = -obj -> vx;
             return;
         }
     }
-    if (obj[0].type == 'o') {
+    if (obj ->type == 'o') {
         TObject temp = *obj;
         move_object_vertically(&temp);
         if (temp.IsFLy) {
-            obj[0].x -= obj[0].vx;
-            obj[0].vx = -obj[0].vx;
+            obj -> x -= obj -> vx;
+            obj -> vx = -obj -> vx;
         }
     }
 }
@@ -398,10 +398,10 @@ void move_object_vertically(TObject* obj) {
 
     for (int i = 0; i < blockCount; i++) {
         if (is_collide(*obj, block[i])) {
-            if (obj[0].vy > 0) {
-                obj[0].IsFLy = false;
+            if (obj -> vy > 0) {
+                obj -> IsFLy = false;
             }
-            if ((block[i].type == '?') && (obj[0].vy < 0) && (obj == &mario)) {
+            if ((block[i].type == '?') && (obj -> vy < 0) && (obj == &mario)) {
                 block[i].type = '-';
                 init_object(add_new_moving(moving, movingCount), block[i].x, block[i].y - 3, 3, 2, '$', default_velocity);
                 moving[movingCount - 1].vy = -0.7;
