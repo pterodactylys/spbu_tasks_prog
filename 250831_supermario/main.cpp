@@ -54,75 +54,75 @@ int score;
 
 TObject *AddNewBlock();
 TObject *AddNewMoving();
-void ClearMap();
-void CreateLevel(int lvl);
-void DeleteMoving(int i);
-void HideCursor();
-void HorizontalMapMove(float dx);
-void HorizontalMove(TObject* obj);
-void InitObject(TObject* obj, float xPos, float yPos, float width,
+void clear_map();
+void create_level(int lvl);
+void delete_moving(int i);
+void hide_cursor();
+void move_map_horizontally(float dx);
+void move_objects_horizontally(TObject* obj);
+void init_object(TObject* obj, float xPos, float yPos, float width,
                 float height, char ctype);
-bool IsCollide(TObject obj1, TObject obj2);
-bool IsOnMap(int x, int y);
-void MarioCollision();
-void PlaceObject(TObject obj);
-void PlayerDeath();
-void PrintMap();
-void setCursorPosition(int x, int y);
-void SetObjectPos(TObject* obj, float xPos, float yPos);
-void ShowCursor();
+bool is_collide(TObject obj1, TObject obj2);
+bool is_on_map(int x, int y);
+void check_mario_collision();
+void place_object(TObject obj);
+void player_die();
+void print_map();
+void set_cursor_position(int x, int y);
+void set_object_pos(TObject* obj, float xPos, float yPos);
+void show_cursor();
 void ShowScore();
-void VerticalMove(TObject* obj);
+void move_object_vertically(TObject* obj);
 
 
 int main() {
-    HideCursor();
-    CreateLevel(level);
+    hide_cursor();
+    create_level(level);
 
     do {
-    ClearMap();
+    clear_map();
 
     if ((GetKeyState(VK_SPACE) < 0) && (!mario.IsFLy)) {
         mario.vy = JUMP_VELOCITY;
     }
 
     if ((GetKeyState(VK_LEFT) < 0) || (GetKeyState('A') < 0)) {
-        HorizontalMapMove(PLAYER_VELOCITY);
+        move_map_horizontally(PLAYER_VELOCITY);
     }
     if ((GetKeyState(VK_RIGHT) < 0) || (GetKeyState('D') < 0)) {
-        HorizontalMapMove(-PLAYER_VELOCITY);
+        move_map_horizontally(-PLAYER_VELOCITY);
     }
     
     if (mario.y > mapHeight) {
-        PlayerDeath();
+        player_die();
     }
 
-    VerticalMove(&mario);
-    MarioCollision();
+    move_object_vertically(&mario);
+    check_mario_collision();
 
     for (int i = 0; i < blockCount; i++) {
-        PlaceObject(block[i]);
+        place_object(block[i]);
     }
     for (int i = 0; i < movingCount; i++) {
-        VerticalMove(moving + i);
-        HorizontalMove(moving + i);
+        move_object_vertically(moving + i);
+        move_objects_horizontally(moving + i);
         if (moving[i].y < -10) {
-            DeleteMoving(i);
+            delete_moving(i);
             i--;
             continue;
         }
-        PlaceObject(moving[i]);
+        place_object(moving[i]);
     }    
 
-    PlaceObject(mario);
+    place_object(mario);
     ShowScore();
-    setCursorPosition(0, 0);
-    PrintMap();
+    set_cursor_position(0, 0);
+    print_map();
 
     Sleep(10);
     }
     while (GetKeyState(VK_ESCAPE) >= 0);
-    ShowCursor();
+    show_cursor();
     
     delete[] block;
     delete[] moving;
@@ -153,7 +153,7 @@ TObject *AddNewMoving() {
     return moving + (movingCount - 1);
 }
 
-void ClearMap() {
+void clear_map() {
     for (int i = 0; i < mapWidth; i++) {
         map[0][i] = ' ';
     }
@@ -163,7 +163,7 @@ void ClearMap() {
     }
 }
 
-void CreateLevel(int lvl) {
+void create_level(int lvl) {
 
     system("color 0B");
 
@@ -175,65 +175,65 @@ void CreateLevel(int lvl) {
     movingCount = 0;
     moving = nullptr;
 
-    InitObject(&mario, 39, 10, PLAYER_WIDTH, PLAYER_HEIGHT, '@');
+    init_object(&mario, 39, 10, PLAYER_WIDTH, PLAYER_HEIGHT, '@');
     score = 0;
 
     if (lvl == 1) {
-        InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
-            InitObject(AddNewBlock(), 30, 10, 5, 3, '?');
-            InitObject(AddNewBlock(), 50, 10, 5, 3, '?');
-        InitObject(AddNewBlock(), 60, 15, 40, 10, '#');
-            InitObject(AddNewBlock(), 60, 5, 10, 3, '-');
-            InitObject(AddNewBlock(), 70, 5, 5, 3, '?');
-            InitObject(AddNewBlock(), 75, 5, 5, 3, '-');
-            InitObject(AddNewBlock(), 80, 5, 5, 3, '?');
-            InitObject(AddNewBlock(), 85, 5, 10, 3, '-');
-        InitObject(AddNewBlock(), 100, 20, 20, 5, '#');
-        InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
-        InitObject(AddNewBlock(), 150, 20, 40, 5, '#');
-        InitObject(AddNewBlock(), 210, 15, 10, 10, '+');
+        init_object(AddNewBlock(), 20, 20, 40, 5, '#');
+            init_object(AddNewBlock(), 30, 10, 5, 3, '?');
+            init_object(AddNewBlock(), 50, 10, 5, 3, '?');
+        init_object(AddNewBlock(), 60, 15, 40, 10, '#');
+            init_object(AddNewBlock(), 60, 5, 10, 3, '-');
+            init_object(AddNewBlock(), 70, 5, 5, 3, '?');
+            init_object(AddNewBlock(), 75, 5, 5, 3, '-');
+            init_object(AddNewBlock(), 80, 5, 5, 3, '?');
+            init_object(AddNewBlock(), 85, 5, 10, 3, '-');
+        init_object(AddNewBlock(), 100, 20, 20, 5, '#');
+        init_object(AddNewBlock(), 120, 15, 10, 10, '#');
+        init_object(AddNewBlock(), 150, 20, 40, 5, '#');
+        init_object(AddNewBlock(), 210, 15, 10, 10, '+');
 
-        InitObject(AddNewMoving(), 25, 10, 3, 2, 'o');
-        InitObject(AddNewMoving(), 80, 10, 3, 2, 'o');
+        init_object(AddNewMoving(), 25, 10, 3, 2, 'o');
+        init_object(AddNewMoving(), 80, 10, 3, 2, 'o');
     }
 
     else if (lvl == 2) {
-        InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
-        InitObject(AddNewBlock(), 60, 15, 10, 10, '#');
-        InitObject(AddNewBlock(), 80, 20, 20, 5, '#');
-        InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
-        InitObject(AddNewBlock(), 150, 20, 40, 5, '#');
-        InitObject(AddNewBlock(), 210, 15, 10, 10, '+');
+        init_object(AddNewBlock(), 20, 20, 40, 5, '#');
+        init_object(AddNewBlock(), 60, 15, 10, 10, '#');
+        init_object(AddNewBlock(), 80, 20, 20, 5, '#');
+        init_object(AddNewBlock(), 120, 15, 10, 10, '#');
+        init_object(AddNewBlock(), 150, 20, 40, 5, '#');
+        init_object(AddNewBlock(), 210, 15, 10, 10, '+');
         movingCount = 0;  
-        InitObject(AddNewMoving(), 25, 10, 3, 2, 'o');
-        InitObject(AddNewMoving(), 80, 10, 3, 2, 'o');
-        InitObject(AddNewMoving(), 65, 10, 3, 2, 'o');
-        InitObject(AddNewMoving(), 120, 10, 3, 2, 'o');
-        InitObject(AddNewMoving(), 160, 10, 3, 2, 'o');
-        InitObject(AddNewMoving(), 175, 10, 3, 2, 'o');
+        init_object(AddNewMoving(), 25, 10, 3, 2, 'o');
+        init_object(AddNewMoving(), 80, 10, 3, 2, 'o');
+        init_object(AddNewMoving(), 65, 10, 3, 2, 'o');
+        init_object(AddNewMoving(), 120, 10, 3, 2, 'o');
+        init_object(AddNewMoving(), 160, 10, 3, 2, 'o');
+        init_object(AddNewMoving(), 175, 10, 3, 2, 'o');
     
     }
 
     else if (lvl == 3) {
-        InitObject(AddNewBlock(), 20, 20, 40, 5, '#');
-        InitObject(AddNewBlock(), 80, 20, 15, 5, '#');
-        InitObject(AddNewBlock(), 120, 15, 10, 10, '#');
-        InitObject(AddNewBlock(), 160, 10, 15, 15, '#');
-        InitObject(AddNewBlock(), 200, 20, 20, 5, '#');
-        InitObject(AddNewBlock(), 240, 15, 10, 10, '+');
+        init_object(AddNewBlock(), 20, 20, 40, 5, '#');
+        init_object(AddNewBlock(), 80, 20, 15, 5, '#');
+        init_object(AddNewBlock(), 120, 15, 10, 10, '#');
+        init_object(AddNewBlock(), 160, 10, 15, 15, '#');
+        init_object(AddNewBlock(), 200, 20, 20, 5, '#');
+        init_object(AddNewBlock(), 240, 15, 10, 10, '+');
         movingCount = 0;
-        InitObject(AddNewMoving(), 25, 10, 3, 2, 'o');
-        InitObject(AddNewMoving(), 85, 10, 3, 2, 'o');
-        InitObject(AddNewMoving(), 130, 10, 3, 2, 'o');
-        InitObject(AddNewMoving(), 165, 5, 3, 2, 'o');
-        InitObject(AddNewMoving(), 180, 5, 3, 2, 'o');
-        InitObject(AddNewMoving(), 195, 5, 3, 2, 'o');
-        InitObject(AddNewMoving(), 210, 5, 3, 2, '+');
+        init_object(AddNewMoving(), 25, 10, 3, 2, 'o');
+        init_object(AddNewMoving(), 85, 10, 3, 2, 'o');
+        init_object(AddNewMoving(), 130, 10, 3, 2, 'o');
+        init_object(AddNewMoving(), 165, 5, 3, 2, 'o');
+        init_object(AddNewMoving(), 180, 5, 3, 2, 'o');
+        init_object(AddNewMoving(), 195, 5, 3, 2, 'o');
+        init_object(AddNewMoving(), 210, 5, 3, 2, '+');
 
     }
 }
 
-void DeleteMoving(int i) {
+void delete_moving(int i) {
     movingCount--;
     moving[i] = moving[movingCount];
     if (movingCount == 0) {
@@ -250,15 +250,15 @@ void DeleteMoving(int i) {
     }
 }
 
-void HideCursor() {
+void hide_cursor() {
     CONSOLE_CURSOR_INFO cursorInfo = {1, 0};
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
 }
 
-void HorizontalMapMove(float dx) {
+void move_map_horizontally(float dx) {
     mario.x -= dx;
     for (int i = 0; i < blockCount; i++) {
-        if (IsCollide(mario, block[i])) {
+        if (is_collide(mario, block[i])) {
             mario.x += dx;
             return;
         }
@@ -272,10 +272,10 @@ void HorizontalMapMove(float dx) {
     }
 }
 
-void HorizontalMove(TObject* obj) {
+void move_objects_horizontally(TObject* obj) {
     obj[0].x += obj[0].vx;
     for (int i = 0; i < blockCount; i++) {
-        if (IsCollide(*obj, block[i])) {
+        if (is_collide(*obj, block[i])) {
             obj[0].x -= obj[0].vx;
             obj[0].vx = -obj[0].vx;
             return;
@@ -283,7 +283,7 @@ void HorizontalMove(TObject* obj) {
     }
     if (obj[0].type == 'o') {
         TObject temp = *obj;
-        VerticalMove(&temp);
+        move_object_vertically(&temp);
         if (temp.IsFLy) {
             obj[0].x -= obj[0].vx;
             obj[0].vx = -obj[0].vx;
@@ -291,9 +291,9 @@ void HorizontalMove(TObject* obj) {
     }
 }
 
-void InitObject(TObject* obj, float xPos, float yPos, float width,
+void init_object(TObject* obj, float xPos, float yPos, float width,
                 float height, char ctype) {
-    SetObjectPos(obj, xPos, yPos);
+    set_object_pos(obj, xPos, yPos);
     (obj -> w) = width;
     (obj -> h) = height;
     (obj -> vy) = 0;
@@ -302,34 +302,34 @@ void InitObject(TObject* obj, float xPos, float yPos, float width,
     (obj -> vx) = DEFAULT_VELOCITY;
 }
 
-bool IsCollide(TObject obj1, TObject obj2) {
+bool is_collide(TObject obj1, TObject obj2) {
     return (obj1.x < (obj2.x + obj2.w)) && ((obj1.x + obj1.w) > obj2.x) &&
            (obj1.y < (obj2.y + obj2.h)) && ((obj1.y + obj1.h) > obj2.y);
 }
 
-bool IsOnMap(int x, int y) {
+bool is_on_map(int x, int y) {
     return ( (x >= 0) && (x < mapWidth) && 
              (y >= 0) && (y < mapHeight) );
 }
 
-void MarioCollision() {
+void check_mario_collision() {
     for (int i = 0; i < movingCount; i++) {
-        if (IsCollide(mario, moving[i])) {
+        if (is_collide(mario, moving[i])) {
             if (moving[i].type == 'o') {
                 if (mario.IsFLy && (mario.vy > 0) && 
             mario.y + mario.h < moving[i].y + moving[i].h / 2) {
                     score += MONSTER_REWARD;
-                    DeleteMoving(i);
+                    delete_moving(i);
                     i--;
                     continue;
                 }
                 else {
-                    PlayerDeath();
+                    player_die();
                 }
             }
             if (moving[i].type == '$') {
                 score += COIN_REWARD;
-                DeleteMoving(i);
+                delete_moving(i);
                 i--;
                 continue;
             }
@@ -337,7 +337,7 @@ void MarioCollision() {
     }
 }
 
-void PlaceObject(TObject obj) {
+void place_object(TObject obj) {
     int ix = (int)round(obj.x);
     int iy = (int)round(obj.y);
     int iw = (int)round(obj.w);
@@ -345,39 +345,39 @@ void PlaceObject(TObject obj) {
 
     for (int i = ix; i < (ix + iw); i++) {
         for (int j = iy; j < (iy + ih); j++) {
-            if (IsOnMap(i, j)) {
+            if (is_on_map(i, j)) {
             map[j][i] = obj.type;
             }
         }
     }
 }
 
-void PlayerDeath() {
+void player_die() {
     system("color 4F");
     Sleep(500);
-    CreateLevel(level);
+    create_level(level);
 }
 
-void PrintMap() {
+void print_map() {
     map[mapHeight - 1][mapWidth - 1] = '\0';
     for (int j = 0; j < mapHeight; j++) {
         std::cout << map[j];
     }
 }
 
-void setCursorPosition(int x, int y) {
+void set_cursor_position(int x, int y) {
     COORD coord;
     coord.X = x;
     coord.Y = y;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-void SetObjectPos(TObject* obj, float xPos, float yPos) {
+void set_object_pos(TObject* obj, float xPos, float yPos) {
     (*obj).x = xPos;
     (*obj).y = yPos;
 }
 
-void ShowCursor() {
+void show_cursor() {
     CONSOLE_CURSOR_INFO cursorInfo = {1, 1};
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
 }
@@ -397,19 +397,19 @@ void ShowScore() {
     }
 }
 
-void VerticalMove(TObject* obj) {
+void move_object_vertically(TObject* obj) {
     (*obj).vy += GRAVITY;
     (*obj).IsFLy = true;
-    SetObjectPos(obj, (*obj).x, (*obj).y + (*obj).vy);
+    set_object_pos(obj, (*obj).x, (*obj).y + (*obj).vy);
 
     for (int i = 0; i < blockCount; i++) {
-        if (IsCollide(*obj, block[i])) {
+        if (is_collide(*obj, block[i])) {
             if (obj[0].vy > 0) {
                 obj[0].IsFLy = false;
             }
             if ((block[i].type == '?') && (obj[0].vy < 0) && (obj == &mario)) {
                 block[i].type = '-';
-                InitObject(AddNewMoving(), block[i].x, block[i].y - 3, 3, 2, '$');
+                init_object(AddNewMoving(), block[i].x, block[i].y - 3, 3, 2, '$');
                 moving[movingCount - 1].vy = -0.7;
             }
             (*obj).y -= ((*obj).vy);
@@ -420,7 +420,7 @@ void VerticalMove(TObject* obj) {
 
                 system("color 2F");
                 Sleep(500);
-                CreateLevel(level);
+                create_level(level);
             }
             break;
         }
