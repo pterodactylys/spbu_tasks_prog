@@ -41,7 +41,7 @@ int score;
 
 TObject *add_new_block(TObject*& block, int& blockCount);
 TObject *add_new_moving(TObject*& moving, int& movingCount);
-void clear_map();
+void clear_map(char map[mapHeight][mapWidth + 1], int mapWidth, int mapHeight);
 void create_level(int lvl);
 void delete_moving(int i);
 void hide_cursor();
@@ -67,7 +67,7 @@ int main() {
     create_level(level);
 
     do {
-    clear_map();
+    clear_map(map, mapWidth, mapHeight);
 
     if ((GetKeyState(VK_SPACE) < 0) && (!mario.IsFLy)) {
         mario.vy = JUMP_VELOCITY;
@@ -140,7 +140,7 @@ TObject *add_new_moving(TObject*& moving, int& movingCount) {
     return moving + (movingCount - 1);
 }
 
-void clear_map() {
+void clear_map(char map[mapHeight][mapWidth + 1], int mapWidth, int mapHeight) {
     for (int i = 0; i < mapWidth; i++) {
         map[0][i] = ' ';
     }
