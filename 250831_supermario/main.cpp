@@ -2,19 +2,34 @@
 #include <iostream>
 #include <windows.h>
 
-#define mapWidth 120
-#define mapHeight 30
-#define MAXLVL 3
+// #define mapWidth 120
+// #define mapHeight 30
+// #define MAXLVL 3
 
-#define GRAVITY 0.05
-#define DEFAULT_VELOCITY 0.2
-#define JUMP_VELOCITY -1.0
-#define PLAYER_VELOCITY 1
-#define PLAYER_WIDTH 3
-#define PLAYER_HEIGHT 3
+// #define GRAVITY 0.05
+// #define DEFAULT_VELOCITY 0.2
+// #define JUMP_VELOCITY -1.0
+// #define PLAYER_VELOCITY 1
+// #define PLAYER_WIDTH 3
+// #define PLAYER_HEIGHT 3
 
-#define COIN_REWARD 100
-#define MONSTER_REWARD 50
+// #define COIN_REWARD 100
+// #define MONSTER_REWARD 50
+
+const int mapWidth = 120;
+const int mapHeight = 30;
+const int MAXLVL = 3;
+
+const float GRAVITY = 0.05;
+const float DEFAULT_VELOCITY = 0.2;
+const float JUMP_VELOCITY = -1.0;
+const float PLAYER_VELOCITY = 1.0;
+
+const int PLAYER_WIDTH = 3;
+const int PLAYER_HEIGHT = 3;
+
+const int COIN_REWARD = 100;
+const int MONSTER_REWARD = 50;
 
 
 typedef struct SObject {
