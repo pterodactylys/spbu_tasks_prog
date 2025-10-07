@@ -279,12 +279,12 @@ void HorizontalMove(TObject* obj) {
 void InitObject(TObject* obj, float xPos, float yPos, float width,
                 float height, char ctype) {
     SetObjectPos(obj, xPos, yPos);
-    (*obj).w = width;
-    (*obj).h = height;
-    (*obj).vy = 0;
-    (*obj).type = ctype;
-    (*obj).IsFLy = false;
-    (*obj).vx = DEFAULT_VELOCITY;
+    (obj -> w) = width;
+    (obj -> h) = height;
+    (obj -> vy) = 0;
+    (obj -> type) = ctype;
+    (obj -> IsFLy) = false;
+    (obj -> vx) = DEFAULT_VELOCITY;
 }
 
 bool IsCollide(TObject obj1, TObject obj2) {
