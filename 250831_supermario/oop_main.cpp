@@ -140,8 +140,9 @@ public:
     void check_mario_collisions(const int enemy_reward, const int money_reward);
     void resolve_mario_collisions(Player& mario, GameObject* other, const int enemy_reward, const int money_reward);
     void spawn_coin(float x, float y, Vector2 velocity);
+    void load_level(int level);
     void load();
-    void reload();
+    void reload() { load(); }
     void update(float dt, const int map_height);
     void render(const int score, const int level, const int map_width, const int map_height);
 
@@ -243,7 +244,7 @@ void Player::die() {
     system("color 4F");
     // console_tools::play_sound("die.wav");
     Sleep(1000);
-    if (level) level->reload();
+    if (level) level->load();
     *score = 0;
     system("color 0F");
 }
@@ -286,7 +287,6 @@ void Enemy::walk(float dt) {
 
 void Coin::update(float dt, const int map_height) {
     walk(dt);
-
     float next_y = position.y + velocity.y * dt;
     velocity.y += 0.05f;
 
@@ -395,10 +395,16 @@ void Level::resolve_mario_collisions(Player& mario, GameObject* other, const int
         (*score) += 100;
         level_number++;
         if (level_number > max_level) level_number = 1;
-        system("color 2F");
-        Sleep(1000);
-        system("color 0F");
-        load();
+
+        if (level_number == 2) system("color 1F");
+        else if (level_number == 3) system("color 4F");
+        else system("color 0B");
+
+        console_tool::set_cursor_position(0, 0);
+        std::printf("   LEVEL %d START!   \n", level_number);
+        Sleep(600);
+
+        load_level(level_number);
         return;
     }
 }
@@ -409,7 +415,7 @@ void Level::spawn_coin(float x, float y, Vector2 velocity) {
     add_object(coin);
 }
 
-void Level::load() {
+void Level::load_level(int num) {
     for (int i = 0; i < object_count; ++i) {
         delete objects[i];
         objects[i] = nullptr;
@@ -419,17 +425,50 @@ void Level::load() {
     player = new Player(39, 10, this, score);
     add_object(player);
 
-    add_object(new Block(20, 20, 40, 5, BRICK));
-    add_object(new Block(60, 15, 40, 10, BRICK));
-    add_object(new Block(80, 8, 5, 3, FULL_BOX));
-    add_object(new Block(110, 10, 10, 15, WIN_BRICK));
+    switch (level_number) {
+    case 1:
+        add_object(new Block(10, 20, 40, 5, BRICK));
+        add_object(new Block(60, 15, 40, 10, BRICK));
+        add_object(new Block(80, 8, 5, 3, FULL_BOX));
+        add_object(new Block(110, 10, 10, 15, WIN_BRICK));
 
-    add_object(new Enemy(25, 10, this));
-    add_object(new Enemy(90, 10, this));
+        add_object(new Enemy(25, 10, this));
+        add_object(new Enemy(90, 10, this));
+        break;
+    case 2:
+        add_object(new Block(5, 18, 30, 4, BRICK));
+        add_object(new Block(50, 14, 15, 3, FULL_BOX));
+        add_object(new Block(70, 10, 10, 10, BRICK));
+        add_object(new Block(95, 20, 30, 5, BRICK));
+        add_object(new Block(130, 12, 10, 3, WIN_BRICK));
+
+        add_object(new Enemy(30, 10, this));
+        add_object(new Enemy(80, 5, this));
+        add_object(new Enemy(100, 5, this));
+        break;
+    case 3:
+        add_object(new Block(5, 18, 30, 4, BRICK));
+        add_object(new Block(50, 14, 15, 3, FULL_BOX));
+        add_object(new Block(70, 10, 10, 10, BRICK));
+        add_object(new Block(95, 20, 30, 5, BRICK));
+        add_object(new Block(130, 12, 10, 3, WIN_BRICK));
+
+        add_object(new Enemy(30, 10, this));
+        add_object(new Enemy(80, 5, this));
+        add_object(new Enemy(100, 5, this));
+        break;
+    default:
+        system("color 0B");
+        add_object(new Block(20, 20, 40, 5, BRICK));
+        add_object(new Block(60, 15, 40, 10, BRICK));
+        add_object(new Block(110, 10, 10, 15, WIN_BRICK));
+        add_object(new Enemy(30, 10, this));
+        break;
+    }
 }
 
-void Level::reload() {
-    load();
+void Level::load() {
+    load_level(level_number);
 }
 
 void Level::update(float dt, const int map_height) {
