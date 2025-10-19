@@ -10,8 +10,6 @@ const char MARIO = '@';
 const char MONEY = '$';
 const char WIN_BRICK = '+';
 
-const int MAP_WIDTH = 200;
-const int MAP_HEIGHT = 25;
 
 namespace console_tool {
     void set_cursor_position(int x, int y) {
@@ -54,7 +52,7 @@ public:
     }
     virtual ~GameObject() = default;
 
-    virtual void update(float dt) {}
+    virtual void update(float dt, const int map_height) {}
     virtual void render(char** screen, const int map_width, const int map_height) const {
         int ix = (int)round(position.x);
         int iy = (int)round(position.y);
@@ -98,12 +96,12 @@ public:
         position.x += speed;
     }
 
-    void update(float dt) override {
+    void update(float dt, const int map_height) override {
         velocity.y += 0.05f;
         position.y += velocity.y * dt;
 
-        if (position.y > MAP_HEIGHT - 3) {
-            position.y = MAP_HEIGHT - 3;
+        if (position.y > map_height - 3) {
+            position.y = map_height - 3;
             velocity.y = 0;
             is_flying = false;
         }
@@ -121,7 +119,7 @@ public:
         velocity.x = 0.2f;
     }
 
-    void update(float dt) override {
+    void update(float dt, const int map_height) override {
         position.x += velocity.x * dt;
     }
 };
@@ -130,7 +128,7 @@ class Coin : public GameObject {
 public:
     Coin(float x, float y) : GameObject(x, y, 2, 2, MONEY) {}
     
-    void update(float dt) override {
+    void update(float dt, const int map_height) override {
         position.y += velocity.y * dt;
         velocity.y += 0.05f;
     }
@@ -183,10 +181,10 @@ public:
         }
     }
 
-    void update(float dt) {
+    void update(float dt, const int map_height) {
         for (int i = 0; i < object_count; ++i) {
             if (objects[i]) {
-                objects[i]->update(dt);
+                objects[i]->update(dt, map_height);
             }
         }
     }
@@ -254,7 +252,7 @@ public:
     void run(const int map_width, const int map_height) {
         while (is_running) {
             process_input();
-            update();
+            update(map_height);
             render(map_width, map_height);
             Sleep(5);
         }
@@ -276,8 +274,8 @@ public:
         }
     }
 
-    void update() {
-        level->update(1.0f);
+    void update(const int map_height) {
+        level->update(1.0f, map_height);
     }
 
     void render(const int map_width, const int map_height) {
