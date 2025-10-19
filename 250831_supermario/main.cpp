@@ -3,9 +3,8 @@
 #include <windows.h>
 
 
-const int mapWidth = 120;
-const int mapHeight = 30;
-const int maxlvl = 3;
+
+
 
 const float gravity = 0.05;
 const float default_velocity = 0.2;
@@ -28,19 +27,11 @@ typedef struct SObject {
     float vx;
 } TObject;
 
-char map[mapHeight][mapWidth + 1];
-TObject mario;
-TObject *block = nullptr;
-int blockCount;
 
-TObject *moving = nullptr;
-int movingCount;
-
-int level = 1;
-int score;
 
 TObject *add_new_block(TObject*& block, int& blockCount);
 TObject *add_new_moving(TObject*& moving, int& movingCount);
+
 void clear_map(char map[mapHeight][mapWidth + 1], int mapWidth, int mapHeight);
 void create_level(int lvl, int mapWidth, int mapHeight, int playerWidth,
      int playerHeight, int maxlvl);
@@ -53,8 +44,7 @@ void init_object(TObject* obj, float xPos, float yPos, float width, float height
      char ctype, float defaultVelocity);
 bool is_collide(TObject obj1, TObject obj2);
 bool is_on_map(int x, int y, int mapWidth, int mapHeight);
-//void check_mario_collision(int movingCount,
-// int monsterReward, int coinReward); // программа начинает зависать при коллизии марио с объектами
+
 void check_mario_collision();
 void place_object(char map[mapHeight][mapWidth + 1], TObject obj, int mapWidth, int mapHeight);
 void player_die(int level, int mapWidth, int mapHeight, int playerWidth, int playerHeight, int maxlvl);
@@ -65,9 +55,24 @@ void show_cursor();
 void ShowScore(char map[mapHeight][mapWidth + 1], int score, int level, int mapWidth);
 
 
-
 int main() {
     hide_cursor();
+    
+    const int mapWidth = 120;
+    const int mapHeight = 30;
+
+    char map[mapHeight][mapWidth + 1];
+    TObject mario;
+    TObject *block = nullptr;
+    int blockCount;
+
+    TObject *moving = nullptr;
+    int movingCount;
+
+    int level = 1;
+    const int maxlvl = 3;
+    int score;
+
     create_level(level, mapWidth, mapHeight, playerWidth,
          playerHeight, maxlvl);
 
