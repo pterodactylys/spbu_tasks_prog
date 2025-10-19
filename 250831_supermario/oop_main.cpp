@@ -62,6 +62,7 @@ public:
     Vector2 get_size() const { return size; }
     Vector2 get_velocity() const { return velocity; }
     void set_display_char(char sym) { display_char = sym; }
+    void set_flying(bool flying) { is_flying = flying; }
     void set_position(Vector2 pos) { position = pos; }
     void set_velocity(Vector2 vel) { velocity = vel; }
     void set_is_active(bool active) { is_active = active; }
@@ -280,35 +281,60 @@ void Level::check_mario_collisions(const int enemy_reward, const int money_rewar
 void Level::resolve_mario_collisions(Player& mario, GameObject* other, const int enemy_reward, const int money_reward) {
     char other_type = other->get_display_char();
 
+    if (other_type == BRICK || other_type == FULL_BOX || other_type == EMPTY_BOX) {
+        Vector2 mpos = mario.get_position();
+        Vector2 msize = mario.get_size();
+        Vector2 opos = other->get_position();
+        Vector2 osize = other->get_size();
+
+        float mario_bottom = mpos.y + msize.y;
+        float mario_top = mpos.y;
+        float block_top = opos.y;
+        float block_bottom = opos.y + osize.y;
+
+        if (mario.get_velocity().y > 0 && mario_bottom > block_top && mario_top < block_top) {
+            mario.set_position({ mpos.x, block_top - msize.y });
+            mario.set_velocity({ mario.get_velocity().x, 0 });
+            mario.set_flying(false);
+        }
+        else if (mario.get_velocity().y < 0 && mario_top < block_bottom && mario_bottom > block_bottom) {
+            mario.set_velocity({ mario.get_velocity().x, 0 });
+            if (other_type == FULL_BOX) {
+                other->set_display_char(EMPTY_BOX);
+                spawn_coin(opos.x, opos.y - 3);
+                (*score) += 50;
+            }
+        }
+        return;
+    }
+
     if (other_type == ENEMY) {
         if (mario.get_is_flying() &&
             (mario.get_position().y + mario.get_size().y) <
             (other->get_position().y + other->get_size().y / 2)) {
-            // console_tool::play_sound("enemy_defeat.wav");
             (*score) += enemy_reward;
             mario.set_velocity({ mario.get_velocity().x, -0.7f });
             other->set_is_active(false);
         } else {
             mario.die();
         }
-    } else if (other_type == MONEY) {
+        return;
+    }
+
+    if (other_type == MONEY) {
         (*score) += money_reward;
         other->set_is_active(false);
-    } else if (other_type == WIN_BRICK) {
+        return;
+    }
+
+    if (other_type == WIN_BRICK) {
         (*score) += 100;
         level_number++;
-        if (level_number > max_level) {
-            level_number = 1;
-        }
+        if (level_number > max_level) level_number = 1;
         system("color 2F");
-        // console_tool::play_sound("level_up.wav");
         Sleep(1000);
         load();
-    } else if (other_type == FULL_BOX && mario.get_velocity().y < 0) {
-        // console_tool::play_sound("brick_break.wav");
-        other->set_display_char(EMPTY_BOX);
-        spawn_coin(other->get_position().x, other->get_position().y - 3);
-        (*score) += 50;
+        return;
     }
 }
 
