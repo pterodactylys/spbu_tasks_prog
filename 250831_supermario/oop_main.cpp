@@ -83,11 +83,8 @@ public:
     : GameObject(x, y, 3, 3, PLAYER), level(lvl), score(scr) {}
 
     void jump();
-
     void move_left(float speed);
-
     void move_right(float speed);
-
     void update(float dt, const int map_height) override;
     void die();
 };
@@ -98,8 +95,10 @@ public:
 };
 
 class Enemy : public GameObject {
+private:
+    Level* level;
 public:
-    Enemy(float x, float y) : GameObject(x, y, 3, 2, ENEMY) {
+    Enemy(float x, float y, Level* lvl) : GameObject(x, y, 3, 2, ENEMY), level(lvl) {
         velocity.x = 0.2f;
     }
 
@@ -134,21 +133,15 @@ public:
     ~Level();
 
     void add_object(GameObject* object);
-
     void check_mario_collisions(const int enemy_reward, const int money_reward);
-
     void resolve_mario_collisions(Player& mario, GameObject* other, const int enemy_reward, const int money_reward);
-
     void spawn_coin(float x, float y);
-
     void load();
-
     void reload();
-
     void update(float dt, const int map_height);
-
     void render(const int score, const int level, const int map_width, const int map_height);
-    
+
+    bool is_blocked(const Vector2& next_position, const Vector2& size) const;
     Player* get_player() const { return player; }
 };
 
@@ -167,11 +160,8 @@ public:
     ~Game();
 
     void run(const int map_width, const int map_height);
-
     void process_input();
-
     void update(const int map_height);
-
     void render(const int map_width, const int map_height);
 };
 
@@ -218,37 +208,48 @@ void Player::jump() {
     if (!is_flying) {
         velocity.y = -1.0f;
         is_flying = true;
+        // console_tools::play_sound("jump.wav");
     }
 }
 
 void Player::move_left(float speed) {
-    position.x -= speed;
+    float next_x = position.x - speed;
+    if (!level->is_blocked({ next_x, position.y }, size)) {
+        position.x = next_x;
+    }
 }
 
 void Player::move_right(float speed) {
-    position.x += speed;
+    float next_x = position.x + speed;
+    if (!level->is_blocked({ next_x, position.y }, size)) {
+        position.x = next_x;
+    }
 }
 
 void Player::update(float dt, const int map_height) {
     velocity.y += 0.05f;
     position.y += velocity.y * dt;
 
-    if (position.y > map_height - 3) {
-        position.y = map_height - 3;
-        velocity.y = 0;
-        is_flying = false;
+    if (position.y > map_height + 2) {
+        die();
     }
 }
 
 void Player::die() {
     system("color 4F");
+    // console_tools::play_sound("die.wav");
     Sleep(1000);
     if (level) level->reload();
     *score = 0;
+    system("color 0F");
 }
 
 void Enemy::update(float dt, const int map_height) {
-    position.x += velocity.x * dt;
+    if (level->is_blocked({ position.x + velocity.x * dt, position.y }, size)) {
+        velocity.x = -velocity.x;
+    } else {
+        position.x += velocity.x * dt;
+    }
 }
 
 void Coin::update(float dt, const int map_height) {
@@ -313,7 +314,6 @@ void Level::resolve_mario_collisions(Player& mario, GameObject* other, const int
             (mario.get_position().y + mario.get_size().y) <
             (other->get_position().y + other->get_size().y / 2)) {
             (*score) += enemy_reward;
-            mario.set_velocity({ mario.get_velocity().x, -0.7f });
             other->set_is_active(false);
         } else {
             mario.die();
@@ -333,6 +333,7 @@ void Level::resolve_mario_collisions(Player& mario, GameObject* other, const int
         if (level_number > max_level) level_number = 1;
         system("color 2F");
         Sleep(1000);
+        system("color 0F");
         load();
         return;
     }
@@ -340,6 +341,7 @@ void Level::resolve_mario_collisions(Player& mario, GameObject* other, const int
 
 void Level::spawn_coin(float x, float y) {
     Coin* coin = new Coin(x, y);
+    coin->set_velocity({ 0, -0.6f });
     add_object(coin);
 }
 
@@ -358,8 +360,8 @@ void Level::load() {
     add_object(new Block(80, 8, 5, 3, FULL_BOX));
     add_object(new Block(110, 10, 10, 15, WIN_BRICK));
 
-    add_object(new Enemy(25, 10));
-    add_object(new Enemy(90, 10));
+    add_object(new Enemy(25, 10, this));
+    add_object(new Enemy(90, 10, this));
 }
 
 void Level::reload() {
@@ -423,6 +425,30 @@ void Level::render(const int score, const int level, const int map_width, const 
         delete[] screen[i];
     }
     delete[] screen;
+}
+
+bool Level::is_blocked(const Vector2& next_position, const Vector2& size) const {
+    float next_x = next_position.x;
+    float next_y = next_position.y;
+    float w = size.x;
+    float h = size.y;
+    for (int i = 0; i < object_count; ++i) {
+        GameObject* obj = objects[i];
+        if (!obj->get_is_active()) continue;
+
+        char type = obj->get_display_char();
+        if (type != BRICK && type != FULL_BOX && type != EMPTY_BOX && type != WIN_BRICK) continue;
+
+        Vector2 opos = obj->get_position();
+        Vector2 osize = obj->get_size();
+
+        bool overlap = (next_x < opos.x + osize.x &&
+                        next_x + w > opos.x &&
+                        next_y < opos.y + osize.y &&
+                        next_y + h > opos.y);
+        if (overlap) return true;
+    }
+    return false;
 }
 
 Game::~Game() {
