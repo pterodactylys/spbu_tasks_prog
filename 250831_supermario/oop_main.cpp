@@ -13,21 +13,23 @@ const char WIN_BRICK = '+';
 const int MAP_WIDTH = 200;
 const int MAP_HEIGHT = 25;
 
-void set_cursor_position(int x, int y) {
-    COORD coord;
-    coord.X = x;
-    coord.Y = y;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-}
+namespace console_tool {
+    void set_cursor_position(int x, int y) {
+        COORD coord;
+        coord.X = x;
+        coord.Y = y;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+    }
 
-void hide_cursor() {
-    CONSOLE_CURSOR_INFO cursorInfo = {1, 0};
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
-}
+    void hide_cursor() {
+        CONSOLE_CURSOR_INFO cursorInfo = {1, 0};
+        SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+    }
 
-void show_cursor() {
-    CONSOLE_CURSOR_INFO cursorInfo = {1, 1};
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+    void show_cursor() {
+        CONSOLE_CURSOR_INFO cursorInfo = {1, 1};
+        SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+    }
 }
 
 struct Vector2 {
@@ -53,14 +55,14 @@ public:
     virtual ~GameObject() = default;
 
     virtual void update(float dt) {}
-    virtual void render(char** screen) const {
+    virtual void render(char** screen, const int map_width, const int map_height) const {
         int ix = (int)round(position.x);
         int iy = (int)round(position.y);
         int iw = (int)round(size.x);
         int ih = (int)round(size.y);
-        
-        for (int i = 0; i < ih && (iy + i) < MAP_HEIGHT; ++i) {
-            for (int j = 0; j < iw && (ix + j) < MAP_WIDTH; ++j) {
+
+        for (int i = 0; i < ih && (iy + i) < map_height; ++i) {
+            for (int j = 0; j < iw && (ix + j) < map_width; ++j) {
                 if (ix + j >= 0 && iy + i >= 0) {
                     screen[iy + i][ix + j] = display_char;
                 }
@@ -69,7 +71,6 @@ public:
     }
 
     virtual void onCollision(const GameObject& other) {}
-
     Vector2 get_position() const { return position; }
     Vector2 get_size() const { return size; }
     Vector2 get_velocity() const { return velocity; }
@@ -159,23 +160,19 @@ public:
     }
 
     void load() {
-        // Clear existing objects
         for (int i = 0; i < object_count; ++i) {
             delete objects[i];
             objects[i] = nullptr;
         }
         object_count = 0;
 
-        // Create player
         player = new Player(39, 10);
         add_object(player);
 
-        // Add some blocks
         add_object(new Block(20, 20, 40, 5, BRICK));
         add_object(new Block(30, 10, 5, 3, FULL_BOX));
         add_object(new Block(50, 10, 5, 3, FULL_BOX));
         
-        // Add enemies
         add_object(new Enemy(25, 10));
         add_object(new Enemy(80, 10));
     }
@@ -194,19 +191,19 @@ public:
         }
     }
 
-    void render(const int score, const int level) {
-        char** screen = new char*[MAP_HEIGHT];
-        for (int i = 0; i < MAP_HEIGHT; ++i) {
-            screen[i] = new char[MAP_WIDTH + 1];
-            for (int j = 0; j < MAP_WIDTH; ++j) {
+    void render(const int score, const int level, const int map_width, const int map_height) {
+        char** screen = new char*[map_height];
+        for (int i = 0; i < map_height; ++i) {
+            screen[i] = new char[map_width + 1];
+            for (int j = 0; j < map_width; ++j) {
                 screen[i][j] = ' ';
             }
-            screen[i][MAP_WIDTH] = '\0';
+            screen[i][map_width] = '\0';
         }
         
         for (int i = 0; i < object_count; ++i) {
             if (objects[i]) {
-                objects[i]->render(screen);
+                objects[i]->render(screen, map_width, map_height);
             }
         }
 
@@ -220,16 +217,15 @@ public:
             screen[1][i + 5] = c[i];
         }
         for (int i = 0; i < len_s; i++) {
-            screen[1][MAP_WIDTH - len_s - 5 + i] = s[i];
+            screen[1][map_width - len_s - 5 + i] = s[i];
         }
         
-        set_cursor_position(0, 0);
-        for (int i = 0; i < MAP_HEIGHT; ++i) {
+        console_tool::set_cursor_position(0, 0);
+        for (int i = 0; i < map_height; ++i) {
             std::cout << screen[i] << std::endl;
         }
-        
-        // Clean up screen memory
-        for (int i = 0; i < MAP_HEIGHT; ++i) {
+
+        for (int i = 0; i < map_height; ++i) {
             delete[] screen[i];
         }
         delete[] screen;
@@ -246,21 +242,21 @@ private:
     bool is_running;
 public:
     Game() : is_running(true), score(0), current_level(1) {
-        hide_cursor();
+        console_tool::hide_cursor();
         level = new Level();
     }
 
     ~Game() {
         delete level;
-        show_cursor();
+        console_tool::show_cursor();
     }
 
-    void run() {
+    void run(const int map_width, const int map_height) {
         while (is_running) {
             process_input();
             update();
-            render();
-            Sleep(5);  // Roughly 60 FPS
+            render(map_width, map_height);
+            Sleep(5);
         }
     }
 
@@ -284,13 +280,15 @@ public:
         level->update(1.0f);
     }
 
-    void render() {
-        level->render(score, current_level);
+    void render(const int map_width, const int map_height) {
+        level->render(score, current_level, map_width, map_height);
     }
 };
 
 int main() {
+    const int map_width = 200;
+    const int map_height = 25;
     Game game;
-    game.run();
+    game.run(map_width, map_height);
     return 0;
 }
