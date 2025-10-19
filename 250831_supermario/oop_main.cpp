@@ -103,6 +103,7 @@ public:
     }
 
     void update(float dt, const int map_height) override;
+    void walk(float dt);
 };
 
 class Coin : public GameObject {
@@ -112,6 +113,7 @@ public:
     Coin(float x, float y, Level* lvl) : GameObject(x, y, 2, 2, MONEY), level(lvl) {}
 
     void update(float dt, const int map_height) override;
+    void walk(float dt);
 };
 
 class Level {
@@ -137,7 +139,7 @@ public:
     void add_object(GameObject* object);
     void check_mario_collisions(const int enemy_reward, const int money_reward);
     void resolve_mario_collisions(Player& mario, GameObject* other, const int enemy_reward, const int money_reward);
-    void spawn_coin(float x, float y);
+    void spawn_coin(float x, float y, Vector2 velocity);
     void load();
     void reload();
     void update(float dt, const int map_height);
@@ -247,24 +249,44 @@ void Player::die() {
 }
 
 void Enemy::update(float dt, const int map_height) {
-
-    float next_x = position.x + velocity.x * dt;
-    if (level->is_blocked_at({ next_x, position.y }, size, ENEMY)) {
-        velocity.x = -velocity.x;
-    } else {
-        position.x = next_x;
-    }
+    walk(dt);
 
     velocity.y += 0.05f;
     float next_y = position.y + velocity.y * dt;
+
     if (level->is_blocked_at({ position.x, next_y }, size, ENEMY)) {
         velocity.y = 0;
     } else {
         position.y = next_y;
     }
+
+    if (position.y > map_height + 2) {
+        is_active = false;
+    }
+}
+
+void Enemy::walk(float dt) {
+    float next_x = position.x + velocity.x * dt;
+    float check_x = (velocity.x > 0) ? (position.x + size.x + 0.5f) : (position.x - 0.5f);
+    float check_y = position.y + size.y + 0.5f;
+    bool obstacle_ahead;
+    if (level->is_blocked_at({next_x + 0.5f, position.y}, {size.x, size.y}, ENEMY) ||
+        !level->is_blocked_at({check_x, check_y}, {2.1f, 1.0f}, ENEMY))
+    {
+        obstacle_ahead = true;
+    } else {
+        obstacle_ahead = false;
+    }
+    if (obstacle_ahead) {
+        velocity.x = -velocity.x;
+    } else {
+        position.x = next_x;
+    }
 }
 
 void Coin::update(float dt, const int map_height) {
+    walk(dt);
+
     float next_y = position.y + velocity.y * dt;
     velocity.y += 0.05f;
 
@@ -277,6 +299,25 @@ void Coin::update(float dt, const int map_height) {
 
     if (position.y > map_height + 2) {
         is_active = false;
+    }
+}
+
+void Coin::walk(float dt) {
+    float next_x = position.x + velocity.x * dt;
+    float check_x = (velocity.x > 0) ? (position.x + size.x + 1.2f) : (position.x - 1.2f);
+    float check_y = position.y + size.y + 0.5f;
+    bool obstacle_ahead;
+    if (level->is_blocked_at({next_x + 0.5f, position.y}, {size.x, size.y}, MONEY) ||
+        !level->is_blocked_at({check_x, check_y}, {2.1f, 1.0f}, MONEY))
+    {
+        obstacle_ahead = true;
+    } else {
+        obstacle_ahead = false;
+    }
+    if (obstacle_ahead) {
+        velocity.x = -velocity.x;
+    } else {
+        position.x = next_x;
     }
 }
 
@@ -325,7 +366,7 @@ void Level::resolve_mario_collisions(Player& mario, GameObject* other, const int
             mario.set_velocity({ mario.get_velocity().x, 0 });
             if (other_type == FULL_BOX) {
                 other->set_display_char(EMPTY_BOX);
-                spawn_coin(opos.x, opos.y - 3);
+                spawn_coin(opos.x, opos.y - 5, { 0.2f, -0.7f });
                 (*score) += 50;
             }
         }
@@ -362,9 +403,9 @@ void Level::resolve_mario_collisions(Player& mario, GameObject* other, const int
     }
 }
 
-void Level::spawn_coin(float x, float y) {
+void Level::spawn_coin(float x, float y, Vector2 velocity) {
     Coin* coin = new Coin(x, y, this);
-    coin->set_velocity({ 0, -0.6f });
+    coin->set_velocity(velocity);
     add_object(coin);
 }
 
