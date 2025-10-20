@@ -137,13 +137,17 @@ public:
     ~Level();
 
     void add_object(GameObject* object);
-    void check_mario_collisions(const int enemy_reward, const int money_reward);
-    void resolve_mario_collisions(Player& mario, GameObject* other, const int enemy_reward, const int money_reward);
+    void check_mario_collisions(const int enemy_reward, const int money_reward, 
+        const int map_width, const int map_height);
+    int get_level_number() const { return level_number; }
+    void resolve_mario_collisions(Player& mario, GameObject* other, 
+        const int enemy_reward, const int money_reward, 
+        const int map_width, const int map_height);
     void spawn_coin(float x, float y, Vector2 velocity);
     void load_level(int level);
     void load();
     void reload() { load(); }
-    void update(float dt, const int map_height);
+    void update(float dt, const int map_height, const int map_width);
     void render(const int score, const int level, const int map_width, const int map_height);
 
     bool is_blocked_at(const Vector2& next_position, const Vector2& size, const char ignore_type) const;
@@ -166,7 +170,7 @@ public:
 
     void run(const int map_width, const int map_height);
     void process_input();
-    void update(const int map_height);
+    void update(const int map_height, const int map_width);
     void render(const int map_width, const int map_height);
 };
 
@@ -303,22 +307,7 @@ void Coin::update(float dt, const int map_height) {
 }
 
 void Coin::walk(float dt) {
-    float next_x = position.x + velocity.x * dt;
-    float check_x = (velocity.x > 0) ? (position.x + size.x + 1.2f) : (position.x - 1.2f);
-    float check_y = position.y + size.y + 0.5f;
-    bool obstacle_ahead;
-    if (level->is_blocked_at({next_x + 0.5f, position.y}, {size.x, size.y}, MONEY) ||
-        !level->is_blocked_at({check_x, check_y}, {2.1f, 1.0f}, MONEY))
-    {
-        obstacle_ahead = true;
-    } else {
-        obstacle_ahead = false;
-    }
-    if (obstacle_ahead) {
-        velocity.x = -velocity.x;
-    } else {
-        position.x = next_x;
-    }
+    position.x += velocity.x * dt;
 }
 
 Level::~Level() {
@@ -334,16 +323,20 @@ void Level::add_object(GameObject* object) {
     }
 }
 
-void Level::check_mario_collisions(const int enemy_reward, const int money_reward) {
+void Level::check_mario_collisions(const int enemy_reward, const int money_reward, 
+    const int map_width, const int map_height) {
     player = get_player();
     for (int i = 0; i < object_count; ++i) {
         if (is_collide(objects[i], player)) {
-            resolve_mario_collisions(*player, objects[i], enemy_reward, money_reward);
+            resolve_mario_collisions(*player, objects[i], enemy_reward, money_reward, 
+                map_width, map_height);
         }
     }
 }
 
-void Level::resolve_mario_collisions(Player& mario, GameObject* other, const int enemy_reward, const int money_reward) {
+void Level::resolve_mario_collisions(Player& mario, GameObject* other, 
+    const int enemy_reward, const int money_reward, 
+    const int map_width, const int map_height) {
     char other_type = other->get_display_char();
 
     if (other_type == BRICK || other_type == FULL_BOX || other_type == EMPTY_BOX) {
@@ -400,13 +393,21 @@ void Level::resolve_mario_collisions(Player& mario, GameObject* other, const int
         else if (level_number == 3) system("color 4F");
         else system("color 0B");
 
-        console_tool::set_cursor_position(0, 0);
-        std::printf("   LEVEL %d START!   \n", level_number);
-        Sleep(600);
+        system("cls");
+
+        std::string msg = "LEVEL " + std::to_string(level_number) + " START!";
+
+        int center_x = (map_width - (int)msg.size()) / 2;
+        int center_y = map_height / 2;
+        console_tool::set_cursor_position(center_x, center_y);
+        std::cout << msg << std::flush;
+
+        Sleep(1200);
 
         load_level(level_number);
         return;
     }
+
 }
 
 void Level::spawn_coin(float x, float y, Vector2 velocity) {
@@ -425,7 +426,7 @@ void Level::load_level(int num) {
     player = new Player(39, 10, this, score);
     add_object(player);
 
-    switch (level_number) {
+    switch (num) {
     case 1:
         add_object(new Block(10, 20, 40, 5, BRICK));
         add_object(new Block(60, 15, 40, 10, BRICK));
@@ -471,13 +472,13 @@ void Level::load() {
     load_level(level_number);
 }
 
-void Level::update(float dt, const int map_height) {
+void Level::update(float dt, const int map_height, const int map_width) {
     for (int i = 0; i < object_count; ++i) {
         if (objects[i]) {
             objects[i]->update(dt, map_height);
         }
     }
-    check_mario_collisions(100, 50);
+    check_mario_collisions(100, 50, map_width, map_height);
 
     for (int i = 0; i < object_count; ++i) {
         if (objects[i] && !objects[i]->get_is_active()) {
@@ -565,7 +566,7 @@ Game::~Game() {
 void Game::run(const int map_width, const int map_height) {
     while (is_running) {
         process_input();
-        update(map_height);
+        update(map_height, map_width);
         render(map_width, map_height);
         Sleep(5);
     }
@@ -587,10 +588,10 @@ void Game::process_input() {
     }
 }
 
-void Game::update(const int map_height) {
-    level->update(1.0f, map_height);
+void Game::update(const int map_height, const int map_width) {
+    level->update(1.0f, map_height, map_width);
 }
 
 void Game::render(const int map_width, const int map_height) {
-    level->render(score, current_level, map_width, map_height);
+    level->render(score, level->get_level_number(), map_width, map_height);
 }
