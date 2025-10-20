@@ -82,11 +82,11 @@ public:
     Player(float x, float y, Level* lvl, int* scr) 
     : GameObject(x, y, 3, 3, PLAYER), level(lvl), score(scr) {}
 
+    void die();
     void jump();
     void move_left(float speed);
     void move_right(float speed);
     void update(float dt, const int map_height) override;
-    void die();
 };
 
 class Block : public GameObject {
@@ -140,18 +140,18 @@ public:
     void check_mario_collisions(const int enemy_reward, const int money_reward, 
         const int map_width, const int map_height);
     int get_level_number() const { return level_number; }
+    Player* get_player() const { return player; }
+    bool is_blocked_at(const Vector2& next_position, 
+        const Vector2& size, const char ignore_type) const;
+    void load_level(int level);
+    void load();
+    void reload() { load(); }
+    void render(const int score, const int level, const int map_width, const int map_height);
     void resolve_mario_collisions(Player& mario, GameObject* other, 
         const int enemy_reward, const int money_reward, 
         const int map_width, const int map_height);
     void spawn_coin(float x, float y, Vector2 velocity);
-    void load_level(int level);
-    void load();
-    void reload() { load(); }
     void update(float dt, const int map_height, const int map_width);
-    void render(const int score, const int level, const int map_width, const int map_height);
-
-    bool is_blocked_at(const Vector2& next_position, const Vector2& size, const char ignore_type) const;
-    Player* get_player() const { return player; }
 };
 
 class Game {
@@ -168,10 +168,11 @@ public:
 
     ~Game();
 
-    void run(const int map_width, const int map_height);
     void process_input();
-    void update(const int map_height, const int map_width);
     void render(const int map_width, const int map_height);
+    void run(const int map_width, const int map_height);
+    void update(const int map_height, const int map_width);
+    
 };
 
 int main() {
@@ -213,6 +214,37 @@ bool is_collide(const GameObject* a, const GameObject* b) {
             a_pos.y + a_size.y > b_pos.y);
 }
 
+void Player::die() {
+    system("color 4F");
+    console_tool::set_cursor_position(40, 12);
+    system("cls");
+    std::cout << "YOU DIED! Restart level? (Y/N): ";
+    char choice = 0;
+    while (true) {
+        if (GetAsyncKeyState('Y') & 0x8000) { 
+            choice = 'Y'; 
+            break; 
+        }
+        if (GetAsyncKeyState('N') & 0x8000) { 
+            choice = 'N';
+
+            break; 
+        }
+        Sleep(100);
+    }
+
+    if (choice == 'Y') {
+        if (level) level->load();
+        *score = 0;
+        system("color 0F");
+    } else {
+        console_tool::set_cursor_position(40, 14);
+        std::cout << "GAME OVER!";
+        Sleep(1500);
+        exit(0);
+    }
+}
+
 void Player::jump() {
     if (!is_flying) {
         velocity.y = -1.0f;
@@ -242,15 +274,6 @@ void Player::update(float dt, const int map_height) {
     if (position.y > map_height + 2) {
         die();
     }
-}
-
-void Player::die() {
-    system("color 4F");
-    // console_tools::play_sound("die.wav");
-    Sleep(1000);
-    if (level) level->load();
-    *score = 0;
-    system("color 0F");
 }
 
 void Enemy::update(float dt, const int map_height) {
