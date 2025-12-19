@@ -82,5 +82,4 @@ void KeyBoard::create_buttons(
 		
 		buttons[data[i].code] = btn;
 	}
-	buttons[Qt::Key_Backspace] = backspace_btn;
 }
