@@ -90,14 +90,13 @@ KeyBoard::KeyBoard(const int width, QWidget* parent)
 }
 
 void KeyBoard::animate_button(const int code) {
-	if (!buttons.count(code)) return;
-	auto btn = buttons.at(code);
+    if (!buttons.count(code)) return;
+    auto btn = buttons.at(code);
 
-	suppress_emits = true;
-    btn->animateClick();
-    QTimer::singleShot(200, [this]() {
-		suppress_emits = false;
-	});
+    btn->setDown(true);
+    QTimer::singleShot(150, btn, [btn]() {
+        btn->setDown(false);
+    });
 }
 
 QString KeyBoard::get_key_text(const int code) const {
