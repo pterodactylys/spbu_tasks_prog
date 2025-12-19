@@ -18,6 +18,7 @@ namespace biv {
 			std::unordered_map<int, KeyBoardButton*> buttons;
 			
 			KeyBoardData* keyboard_data;
+			bool suppress_emits = false;
 		
 		public:
 			KeyBoard(const int width, QWidget* parent = nullptr);

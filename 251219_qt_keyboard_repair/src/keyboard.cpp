@@ -1,4 +1,5 @@
 #include "keyboard.hpp"
+#include <QTimer>
 
 using biv::KeyBoard;
 
@@ -19,6 +20,7 @@ KeyBoard::KeyBoard(const int width, QWidget* parent)
 	keys_layout->addWidget(backspace_btn, 0, 26, 2, 3);
 	buttons[Qt::Key_Backspace] = backspace_btn;
 	connect(backspace_btn, &QPushButton::clicked, [this]() {
+		if (suppress_emits) return;
 		emit key_pressed(Qt::Key_Backspace);
 	});
 
@@ -28,6 +30,7 @@ KeyBoard::KeyBoard(const int width, QWidget* parent)
 	keys_layout->addWidget(tab_btn, 2, 0, 2, 3);
 	buttons[Qt::Key_Tab] = tab_btn;
 	connect(tab_btn, &QPushButton::clicked, [this]() {
+		if (suppress_emits) return;
 		emit key_pressed(Qt::Key_Tab);
 	});
 	
@@ -39,6 +42,7 @@ KeyBoard::KeyBoard(const int width, QWidget* parent)
 	keys_layout->addWidget(caps_btn, 4, 0, 2, 4);
 	buttons[Qt::Key_CapsLock] = caps_btn;
 	connect(caps_btn, &QPushButton::clicked, [this]() {
+		if (suppress_emits) return;
 		emit key_pressed(Qt::Key_CapsLock);
 	});
 	
@@ -49,6 +53,7 @@ KeyBoard::KeyBoard(const int width, QWidget* parent)
 	keys_layout->addWidget(enter_btn, 4, 26, 2, 3);
 	buttons[Qt::Key_Return] = enter_btn;
 	connect(enter_btn, &QPushButton::clicked, [this]() {
+		if (suppress_emits) return;
 		emit key_pressed(Qt::Key_Return);
 	});
 	
@@ -58,6 +63,7 @@ KeyBoard::KeyBoard(const int width, QWidget* parent)
 	keys_layout->addWidget(left_shift_btn, 6, 0, 2, 5);
 	buttons[Qt::Key_Shift] = left_shift_btn;
 	connect(left_shift_btn, &QPushButton::clicked, [this]() {
+		if (suppress_emits) return;
 		emit key_pressed(Qt::Key_Shift);
 	});
 	
@@ -68,6 +74,7 @@ KeyBoard::KeyBoard(const int width, QWidget* parent)
 	keys_layout->addWidget(right_shift_btn, 6, 25, 2, 4);
 	buttons[Qt::Key_Shift] = right_shift_btn;
 	connect(right_shift_btn, &QPushButton::clicked, [this]() {
+		if (suppress_emits) return;
 		emit key_pressed(Qt::Key_Shift);
 	});
 
@@ -77,14 +84,20 @@ KeyBoard::KeyBoard(const int width, QWidget* parent)
 	keys_layout->addWidget(space, 8, 7, 2, 16);
 	buttons[Qt::Key_Space] = space;
 	connect(space, &QPushButton::clicked, [this]() {
+		if (suppress_emits) return;
 		emit key_pressed(Qt::Key_Space);
 	});
 }
 
 void KeyBoard::animate_button(const int code) {
-	if (buttons.count(code)) {
-		buttons.at(code)->animateClick();
-	}
+	if (!buttons.count(code)) return;
+	auto btn = buttons.at(code);
+
+	suppress_emits = true;
+    btn->animateClick();
+    QTimer::singleShot(200, [this]() {
+		suppress_emits = false;
+	});
 }
 
 QString KeyBoard::get_key_text(const int code) const {
@@ -115,6 +128,7 @@ void KeyBoard::create_buttons(
 		
 		buttons[data[i].code] = btn;
 		connect(btn, &QPushButton::clicked, [this, code = data[i].code]() {
+			if (suppress_emits) return;
 			emit key_pressed(code);
 		});
 	}
