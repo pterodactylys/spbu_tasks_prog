@@ -64,12 +64,40 @@ KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
 }
 
 void KeyBoardWindow::keyPressEvent(QKeyEvent* event) {
-	const int key = event->key();
-	if (keyboard->is_key_allowed(key)) {
-		display->setText(display->text() + keyboard->get_key_text(key));
-		keyboard->animate_button(key);
-		return;
-	}
+    const int key = event->key();
+	
+	if (key == Qt::Key_Backspace) {
+        QString txt = display->text();
+        if (!txt.isEmpty()) txt.chop(1);
+        display->setText(txt);
+        keyboard->animate_button(Qt::Key_Backspace);
+        return;
+    }
+
+    if (key == Qt::Key_Space) {
+        display->setText(display->text() + ' ');
+        keyboard->animate_button(Qt::Key_Space);
+        return;
+    }
+
+    if (key == Qt::Key_Tab) {
+        display->setText(display->text() + '\t');
+        keyboard->animate_button(Qt::Key_Tab);
+        return;
+    }
+
+    if (key == Qt::Key_Return || key == Qt::Key_Enter) {
+        display->setText(display->text() + ' ');
+        keyboard->animate_button(Qt::Key_Return);
+        return;
+    }
+
+    if (keyboard->is_key_allowed(key)) {
+        display->setText(display->text() + keyboard->get_key_text(key));
+        keyboard->animate_button(key);
+        return;
+    }
+
     const QString txt = event->text();
     if (!txt.isEmpty()) {
         display->setText(display->text() + txt);
