@@ -17,11 +17,19 @@ KeyBoard::KeyBoard(const int width, QWidget* parent)
 	KeyBoardButton* backspace_btn = new KeyBoardButton("Удалить");
 	backspace_btn->setMinimumSize(2 * button_width, button_width);
 	keys_layout->addWidget(backspace_btn, 0, 26, 2, 3);
+	buttons[Qt::Key_Backspace] = backspace_btn;
+	connect(backspace_btn, &QPushButton::clicked, [this]() {
+		emit key_pressed(Qt::Key_Backspace);
+	});
 
 	// 2-я линия
 	KeyBoardButton* tab_btn = new KeyBoardButton("Tab");
 	tab_btn->setMinimumSize(2 * button_width, button_width);
 	keys_layout->addWidget(tab_btn, 2, 0, 2, 3);
+	buttons[Qt::Key_Tab] = tab_btn;
+	connect(tab_btn, &QPushButton::clicked, [this]() {
+		emit key_pressed(Qt::Key_Tab);
+	});
 	
 	create_buttons(keyboard_data->get_line2(), keys_layout, 2, 3);
 	
@@ -29,36 +37,61 @@ KeyBoard::KeyBoard(const int width, QWidget* parent)
 	KeyBoardButton* caps_btn = new KeyBoardButton("Caps");
 	caps_btn->setMinimumSize(2 * button_width, button_width);
 	keys_layout->addWidget(caps_btn, 4, 0, 2, 4);
+	buttons[Qt::Key_CapsLock] = caps_btn;
+	connect(caps_btn, &QPushButton::clicked, [this]() {
+		emit key_pressed(Qt::Key_CapsLock);
+	});
 	
 	create_buttons(keyboard_data->get_line3(), keys_layout, 4, 4);
 	
 	KeyBoardButton* enter_btn = new KeyBoardButton("Enter");
 	enter_btn->setMinimumSize(2 * button_width, button_width);
 	keys_layout->addWidget(enter_btn, 4, 26, 2, 3);
+	buttons[Qt::Key_Return] = enter_btn;
+	connect(enter_btn, &QPushButton::clicked, [this]() {
+		emit key_pressed(Qt::Key_Return);
+	});
 	
 	// 4-я линия
 	KeyBoardButton* left_shift_btn = new KeyBoardButton("Shift");
 	left_shift_btn->setMinimumSize(2 * button_width, button_width);
 	keys_layout->addWidget(left_shift_btn, 6, 0, 2, 5);
+	buttons[Qt::Key_Shift] = left_shift_btn;
+	connect(left_shift_btn, &QPushButton::clicked, [this]() {
+		emit key_pressed(Qt::Key_Shift);
+	});
 	
 	create_buttons(keyboard_data->get_line4(), keys_layout, 6, 5);
 	
 	KeyBoardButton* right_shift_btn = new KeyBoardButton("Shift");
 	right_shift_btn->setMinimumSize(2 * button_width, button_width);
 	keys_layout->addWidget(right_shift_btn, 6, 25, 2, 4);
+	buttons[Qt::Key_Shift] = right_shift_btn;
+	connect(right_shift_btn, &QPushButton::clicked, [this]() {
+		emit key_pressed(Qt::Key_Shift);
+	});
 
 	// 5-я линия
 	KeyBoardButton* space = new KeyBoardButton();
 	space->setMinimumSize(8 * button_width, button_width);
 	keys_layout->addWidget(space, 8, 7, 2, 16);
+	buttons[Qt::Key_Space] = space;
+	connect(space, &QPushButton::clicked, [this]() {
+		emit key_pressed(Qt::Key_Space);
+	});
 }
 
 void KeyBoard::animate_button(const int code) {
-	buttons.at(code)->animateClick();
+	if (buttons.count(code)) {
+		buttons.at(code)->animateClick();
+	}
 }
 
 QString KeyBoard::get_key_text(const int code) const {
-	return buttons.at(code)->text();
+	if (buttons.count(code)) {
+		return buttons.at(code)->text();
+	}
+	return QString();
 }
 
 bool KeyBoard::is_key_allowed(const int code) const noexcept {
@@ -81,5 +114,8 @@ void KeyBoard::create_buttons(
 		layout->addWidget(btn, line, i * 2 + start_position, 2, 2);
 		
 		buttons[data[i].code] = btn;
+		connect(btn, &QPushButton::clicked, [this, code = data[i].code]() {
+			emit key_pressed(code);
+		});
 	}
 }

@@ -40,6 +40,27 @@ KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
 	main_layout->addLayout(smail_layout);
     main_layout->addWidget(display);
     main_layout->addWidget(keyboard);
+
+	connect(keyboard, &KeyBoard::key_pressed, this, [this](int key) {
+		if (keyboard -> is_key_allowed(key)) {
+			display -> setText(display -> text() + keyboard -> get_key_text(key));
+			keyboard -> animate_button(key);
+			return;
+		}
+
+		if (key == Qt::Key_Backspace) {
+			QString current_text = display -> text();
+			current_text.chop(1);
+			display -> setText(current_text);
+			keyboard -> animate_button(key);
+			return;
+		}
+		if (key == Qt::Key_Space) {
+			display -> setText(display -> text() + " ");
+			keyboard -> animate_button(key);
+			return;
+		}
+	});
 }
 
 void KeyBoardWindow::keyPressEvent(QKeyEvent* event) {
