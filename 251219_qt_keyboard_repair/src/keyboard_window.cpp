@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QVBoxLayout>
+#include <QKeyEvent>
 
 using biv::KeyBoardWindow;
 
@@ -11,6 +12,9 @@ KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
 	const int keyboard_width = 1160;
 	resize(keyboard_width, 710);
     setWindowTitle("Грустная Клавиатура");
+
+	setFocusPolicy(Qt::StrongFocus);
+    setFocus();
 	
 	QPixmap pixmap("img/grustnii-smail.png");
 	QLabel* image = new QLabel(this);
@@ -27,7 +31,10 @@ KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
     display->setReadOnly(true);
 	display->setText("Помоги мне заработать лучше...");
 
-	keyboard = new KeyBoard(keyboard_width);
+    display->setFocusPolicy(Qt::NoFocus);
+
+    keyboard = new KeyBoard(keyboard_width);
+    keyboard->setFocusPolicy(Qt::NoFocus);
 
     QVBoxLayout* main_layout = new QVBoxLayout(this);
 	main_layout->addLayout(smail_layout);
@@ -36,9 +43,14 @@ KeyBoardWindow::KeyBoardWindow(QWidget* parent) : QWidget(parent) {
 }
 
 void KeyBoardWindow::keyPressEvent(QKeyEvent* event) {
-	const int key = event->nativeVirtualKey();
+	const int key = event->key();
 	if (keyboard->is_key_allowed(key)) {
 		display->setText(display->text() + keyboard->get_key_text(key));
 		keyboard->animate_button(key);
+		return;
 	}
+    const QString txt = event->text();
+    if (!txt.isEmpty()) {
+        display->setText(display->text() + txt);
+    }
 }
