@@ -8,12 +8,12 @@ int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
 	biv::StartupWindow startup_window(400, 300);
-    startup_window.show();
-
-
-
     biv::KeyBoardWindow keyboard_window;
-    keyboard_window.show();
-	
+    startup_window.show();
+    QObject::connect(&startup_window, &biv::StartupWindow::start_requested, [&]() {
+        startup_window.close();
+        keyboard_window.show();
+            });
+
     return app.exec();
 }
