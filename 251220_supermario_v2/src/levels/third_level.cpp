@@ -1,21 +1,16 @@
-#include "second_level.hpp"
 #include "third_level.hpp"
 
-using biv::SecondLevel;
+using biv::ThirdLevel;
 
-SecondLevel::SecondLevel(UIFactory* ui_factory) : GameLevel(ui_factory) {
+ThirdLevel::ThirdLevel(UIFactory* ui_factory) : GameLevel(ui_factory) {
 	init_data();
 }
 
-bool SecondLevel::is_final() const noexcept {
-	return false;
+bool ThirdLevel::is_final() const noexcept {
+	return true;
 }
 
-biv::GameLevel* SecondLevel::get_next() {
-	if (!next) {
-		clear_data();
-		next = new biv::ThirdLevel(ui_factory);
-	}
+biv::GameLevel* ThirdLevel::get_next() {
 	return next;
 }
 
@@ -23,8 +18,8 @@ biv::GameLevel* SecondLevel::get_next() {
 // ----------------------------------------------------------------------------
 // 									PROTECTED
 // ----------------------------------------------------------------------------
-void SecondLevel::init_data() {
-	ui_factory->create_mario({39, 10}, 3, 3);
+void ThirdLevel::init_data() {
+	ui_factory->create_mario({49, 10}, 3, 3);
 	
 	ui_factory->create_ship({20, 25}, 40, 2);
 	ui_factory->create_ship({60, 20}, 10, 7);
@@ -32,4 +27,6 @@ void SecondLevel::init_data() {
 	ui_factory->create_ship({120, 20}, 10, 7);
 	ui_factory->create_ship({150, 25}, 40, 2);
 	ui_factory->create_ship({210, 20}, 10, 7);
+
+    ui_factory->create_money({80, 20}, 3, 2);
 }
