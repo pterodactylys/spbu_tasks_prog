@@ -6,7 +6,7 @@ JumpingEnemy::JumpingEnemy(
     const Coord& top_left,
     const int width,
     const int height,
-    const int jump_interval = 50
+    const int jump_interval
 ) : Enemy(top_left, width, height),
     time_to_jump(jump_interval),
     jump_interval(jump_interval) {
