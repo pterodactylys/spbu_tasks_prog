@@ -2,6 +2,7 @@ target_sources(${PROJECT_NAME}
 	PRIVATE
 		qt_box.cpp
 		qt_enemy.cpp
+		qt_flying_enemy.cpp
 		qt_jumping_enemy.cpp
 		qt_full_box.cpp
 		qt_mario.cpp

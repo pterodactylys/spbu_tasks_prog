@@ -15,6 +15,7 @@ void QtUIFactory::clear_data() {
 	full_boxes.clear();
 	ships.clear();
 	enemies.clear();
+	flying_enemies.clear();
 	jumping_enemies.clear();
 	moneys.clear();
 }
@@ -45,6 +46,17 @@ void QtUIFactory::create_jumping_enemy(
 ) {
 	QtJumpingEnemy* enemy = new QtJumpingEnemy(top_left, width, height);
 	jumping_enemies.push_back(enemy);
+	game->add_map_movable(enemy);
+	game->add_movable(enemy);
+	game->add_collisionable(enemy);
+	game_map->add_obj(enemy);
+}
+
+void QtUIFactory::create_flying_enemy(
+	const Coord& top_left, const int width, const int height
+) {
+	QtFlyingEnemy* enemy = new QtFlyingEnemy(top_left, width, height);
+	flying_enemies.push_back(enemy);
 	game->add_map_movable(enemy);
 	game->add_movable(enemy);
 	game->add_collisionable(enemy);

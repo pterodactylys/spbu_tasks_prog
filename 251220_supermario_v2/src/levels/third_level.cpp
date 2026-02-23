@@ -29,4 +29,8 @@ void ThirdLevel::init_data() {
 	ui_factory->create_ship({210, 20}, 10, 7);
 
     ui_factory->create_money({80, 20}, 3, 2);
+
+	ui_factory->create_flying_enemy({100, 8}, 3, 2);
+	ui_factory->create_flying_enemy({140, 10}, 3, 2);
+	ui_factory->create_flying_enemy({180, 6}, 3, 2);
 }
