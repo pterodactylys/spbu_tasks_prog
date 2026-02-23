@@ -1,1 +1,5 @@
-add_subdirectory(console)
+if(USE_QT)
+	add_subdirectory(qt)
+else()
+	add_subdirectory(console)
+endif()
