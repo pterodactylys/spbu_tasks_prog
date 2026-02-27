@@ -8,7 +8,7 @@ namespace biv {
 			float base_y;
 			float fly_amplitude;
 			float fly_phase = 0;
-			static constexpr float FLY_SPEED = 0.05f;
+			static constexpr float FLY_SPEED = 0.02f;
 
 		public:
 			FlyingEnemy(
