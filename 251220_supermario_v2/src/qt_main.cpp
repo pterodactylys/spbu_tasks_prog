@@ -1,7 +1,3 @@
-/**
-	Qt-версия игрового цикла Super Mario.
-	Использует QApplication + QTimer вместо while-цикла с sleep.
-*/
 #include <QApplication>
 #include <QTimer>
 
@@ -16,7 +12,6 @@
 #include <QKeyEvent>
 
 namespace {
-	// Вспомогательный класс для обработки ввода через Qt
 	class GameWidget : public QWidget {
 		public:
 			bool key_left = false;
@@ -126,8 +121,8 @@ int main(int argc, char* argv[]) {
 			app.quit();
 		}
 	});
-	timer.start(10); // 10мс — как в консольной версии
+	timer.start(10);
 
-	// 6. Завершение по выходу из Qt event loop
+	// 6. Завершение
 	return app.exec();
 }
