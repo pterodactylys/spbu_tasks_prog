@@ -1,5 +1,6 @@
 target_sources(${PROJECT_NAME}
 	PRIVATE
+		basic_enemy.cpp
 		collisionable.cpp
 		game_map.cpp
 		movable.cpp
