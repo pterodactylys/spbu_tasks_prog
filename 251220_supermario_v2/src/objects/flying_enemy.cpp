@@ -18,7 +18,7 @@ FlyingEnemy::FlyingEnemy(
 }
 
 void FlyingEnemy::move_vertically() noexcept {
-	fly_phase += FLY_SPEED;
+	fly_phase += fly_speed;
 	if (fly_phase > 2 * M_PI) {
 		fly_phase -= 2 * M_PI;
 	}

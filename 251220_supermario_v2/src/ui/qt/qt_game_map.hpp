@@ -12,7 +12,7 @@ namespace biv {
 		Q_OBJECT
 
 		private:
-			static constexpr int PIXEL_SCALE = 12;
+			const int PIXEL_SCALE = 12;
 
 			std::vector<QtUIObject*> objs;
 
